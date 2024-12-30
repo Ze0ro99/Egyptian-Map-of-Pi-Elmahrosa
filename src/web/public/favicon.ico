@@ -1,0 +1,51 @@
+Multi-resolution ICO file containing 3 sizes:
+- 16x16 pixels
+- 32x32 pixels
+- 48x48 pixels
+
+Design Elements:
+1. Base Icon:
+- Pi Network symbol (π) as the central element
+- Primary color: #1B4D89 (Pi Network blue)
+- Background color: #F5F5F5 (Light gray)
+
+2. Cultural Elements:
+- Egyptian hieroglyphic-inspired decorative border
+- Subtle integration that maintains clarity at small sizes
+- Border elements simplified at 16x16 size
+
+3. Material Design Features:
+- Subtle shadow depth for elevation effect
+- Crisp, defined boundaries
+- Flat design principles with minimal gradients
+- High contrast for visibility
+
+Technical Requirements:
+- Format: 32-bit RGBA ICO
+- Optimization: Size-specific detail levels
+- High-DPI support for modern displays
+- Clear rendering at all specified sizes
+- Cache-Control header: public, max-age=604800
+
+Size-Specific Optimizations:
+16x16:
+- Simplified design
+- Enhanced edges
+- Basic Pi symbol only
+- Minimal cultural elements
+
+32x32:
+- Balanced detail
+- Clear border elements
+- Full Pi symbol
+- Basic cultural accents
+
+48x48:
+- Full detail
+- Complete cultural elements
+- Rich shadow depth
+- Maximum clarity
+
+The favicon should be created using professional image editing software that supports ICO format with multiple resolutions. The file should be optimized for web use while maintaining visual quality.
+
+Note: This is a binary file format and the actual implementation requires image creation in graphics software rather than code generation.
