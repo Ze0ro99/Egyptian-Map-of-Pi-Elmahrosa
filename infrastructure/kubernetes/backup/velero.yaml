@@ -1,0 +1,128 @@
+# Velero Backup Configuration for Egyptian Map of Pi
+# Version: velero v1.11+
+# AWS SDK: v2.0+
+
+# Daily incremental backup schedule
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: daily-backup
+  namespace: velero
+  annotations:
+    backup.velero.io/backup-validation: "true"
+    backup.velero.io/backup-volumes: "mongodb-data"
+  labels:
+    app.kubernetes.io/name: egyptian-map-of-pi
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: infrastructure
+spec:
+  # Run daily at 1 AM
+  schedule: "0 1 * * *"
+  template:
+    includedNamespaces:
+      - app
+    # Enable volume snapshots for data consistency
+    snapshotVolumes: true
+    volumeSnapshotLocations:
+      - aws-me-south-1
+    storageLocation: aws-s3-backup
+    # 7-day retention for daily backups
+    ttl: "168h"
+    hooks:
+      resources:
+        - name: mongodb-backup-hook
+          includedNamespaces:
+            - app
+          pre:
+            - exec:
+                # Ensure consistent MongoDB backup
+                command:
+                  - "/backup-scripts/mongodb-consistent-backup.sh"
+                timeout: "5m"
+
+---
+# Weekly full backup schedule
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: weekly-full-backup
+  namespace: velero
+  annotations:
+    backup.velero.io/backup-validation: "true"
+    backup.velero.io/backup-volumes: "mongodb-data"
+  labels:
+    app.kubernetes.io/name: egyptian-map-of-pi
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: infrastructure
+spec:
+  # Run weekly on Sunday at midnight
+  schedule: "0 0 * * 0"
+  template:
+    includedNamespaces:
+      - app
+    snapshotVolumes: true
+    volumeSnapshotLocations:
+      - aws-me-south-1
+    storageLocation: aws-s3-backup
+    # 1-year retention for weekly backups
+    ttl: "8760h"
+    hooks:
+      resources:
+        - name: mongodb-backup-hook
+          includedNamespaces:
+            - app
+          pre:
+            - exec:
+                # Extended timeout for full backups
+                command:
+                  - "/backup-scripts/mongodb-consistent-backup.sh"
+                timeout: "10m"
+
+---
+# Backup storage location configuration
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: aws-s3-backup
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: egyptian-map-of-pi
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: infrastructure
+spec:
+  provider: aws
+  objectStorage:
+    bucket: egyptian-map-pi-backups
+    prefix: velero
+    # Enable server-side encryption with AWS KMS
+    encryption:
+      serverSideEncryption: "aws:kms"
+      kmsKeyId: "arn:aws:kms:me-south-1:account-id:key/key-id"
+  config:
+    region: me-south-1
+    s3ForcePathStyle: "true"
+    s3Url: "s3.me-south-1.amazonaws.com"
+    # Enable AWS shared config for credentials
+    enableSharedConfig: "true"
+    # Enable S3 versioning for additional protection
+    enableS3Versioning: "true"
+
+---
+# Volume snapshot location configuration
+apiVersion: velero.io/v1
+kind: VolumeSnapshotLocation
+metadata:
+  name: aws-me-south-1
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: egyptian-map-of-pi
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: infrastructure
+spec:
+  provider: aws
+  config:
+    region: me-south-1
+    # Enable fast snapshot operations
+    enableFastSnapshot: "true"
+    # Enable cross-region restore capability
+    enableCrossRegionRestore: "true"
