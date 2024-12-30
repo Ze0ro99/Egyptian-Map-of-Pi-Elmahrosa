@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: List
+items:
+# Application Namespace for core microservices
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: app
+    labels:
+      name: app
+      part-of: egyptian-map-pi
+      environment: production
+      region: me-south-1
+      security-tier: restricted
+      monitoring: enabled
+    annotations:
+      # Enable strict network policies for this namespace
+      network-policy: strict
+      # AWS IAM role binding for pod service accounts
+      iam.amazonaws.com/permitted-roles: app-role
+      # Enable Prometheus metrics scraping
+      prometheus.io/scrape: "true"
+
+# Monitoring Namespace for observability stack
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: monitoring
+    labels:
+      name: monitoring
+      part-of: egyptian-map-pi
+      environment: production
+      region: me-south-1
+      security-tier: restricted
+      monitoring: enabled
+    annotations:
+      # Specific network policies for monitoring tools
+      network-policy: monitoring
+      # AWS IAM role for monitoring components
+      iam.amazonaws.com/permitted-roles: monitoring-role
+      # Enable self-monitoring
+      prometheus.io/scrape: "true"
+
+# Storage Namespace for databases and persistent volumes
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: storage
+    labels:
+      name: storage
+      part-of: egyptian-map-pi
+      environment: production
+      region: me-south-1
+      security-tier: critical
+      monitoring: enabled
+    annotations:
+      # Storage-specific network policies
+      network-policy: storage
+      # AWS IAM role for storage operations
+      iam.amazonaws.com/permitted-roles: storage-role
+      # Enable metrics collection
+      prometheus.io/scrape: "true"
+      # Enable volume backups with Velero
+      backup.velero.io/backup-volumes: "true"
