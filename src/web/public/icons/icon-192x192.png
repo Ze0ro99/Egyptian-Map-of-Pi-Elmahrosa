@@ -1,0 +1,42 @@
+Format: PNG (image/png)
+Dimensions: 192x192 pixels
+Color Profile: sRGB
+Bit Depth: 32-bit (with alpha channel)
+Maximum File Size: 32KB
+
+Design Specifications:
+1. Layout:
+- Safe Zone: 77px centered square (40% of total dimensions)
+- Internal Padding: 16px on all sides
+- Background: #F5F5F5 (light gray)
+- Primary Color: #1B4D89 (deep blue)
+
+2. Design Elements:
+- Primary Icon: Stylized map marker incorporating Pi symbol
+- Egyptian Elements: Subtle hieroglyphic-inspired decorative elements
+- Material Design: Flat design with subtle elevation shadows
+- Maskable Support: All critical elements within safe zone
+
+3. Technical Requirements:
+- Transparent background for flexible platform display
+- Anti-aliased edges for crisp rendering
+- Optimized paths for pixel-perfect display
+- High-DPI support for retina displays
+
+4. Platform-Specific Considerations:
+- Android: Maskable icon format support
+- Chrome Web Store: Optimized for store listing
+- Pi Browser: Enhanced visibility in platform context
+- PWA: Standard compliant for home screen display
+
+5. Optimization Guidelines:
+- PNG compression: Optimized for size/quality balance
+- Path optimization: Simplified vectors for clean scaling
+- Color optimization: Limited palette for file size reduction
+- Edge preservation: Maintain crispness after compression
+
+Implementation Notes:
+- Export with PNG-8 format where possible for size optimization
+- Use indexed color palette to reduce file size
+- Implement proper gamma correction for cross-platform display
+- Include metadata for PWA manifest compatibility
