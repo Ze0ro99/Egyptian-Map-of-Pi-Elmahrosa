@@ -1,0 +1,47 @@
+Dimensions: 512x512 pixels
+Format: PNG
+MIME type: image/png
+Color Profile: sRGB
+Purpose: any maskable
+
+Design Elements:
+1. Primary Color: #1B4D89 (Pi Network Blue)
+2. Secondary Color: #D4AF37 (Egyptian Gold)
+3. Background: #F5F5F5 (Light Gray)
+
+Key Design Components:
+1. Center Safe Area (409.6x409.6px with 51.2px margin)
+2. Material Design Principles
+3. Egyptian Design Motifs
+4. Pi Network Symbol Integration
+5. RTL-Compatible Layout
+
+Technical Requirements:
+- File size target: < 100KB
+- Lossless compression
+- High DPI support
+- Maskable icon support
+- Minimum contrast ratio: 4.5:1
+
+Usage Contexts:
+- PWA installation
+- App splash screen
+- App store listings
+- High-resolution displays
+- Marketplace listings
+- Social media sharing
+
+Implementation Notes:
+1. The icon should be created from the SVG source file at src/assets/icons/source/icon-512x512.svg
+2. Export with lossless PNG compression
+3. Verify color accuracy in sRGB color space
+4. Test visibility at multiple sizes (16x16 to 512x512)
+5. Validate maskable icon compliance
+6. Ensure cultural sensitivity in design elements
+
+Legal Requirements:
+© 2024 Egyptian Map of Pi
+All rights reserved
+Trademark verified
+
+The icon should be implemented by a professional graphic designer following these exact specifications to create the actual PNG file.
