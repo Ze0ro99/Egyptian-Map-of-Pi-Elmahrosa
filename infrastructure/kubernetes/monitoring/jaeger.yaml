@@ -1,0 +1,135 @@
+# Jaeger Operator Version: 1.45.0
+# Elasticsearch Version: 7.17.0
+---
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  name: jaeger
+  namespace: monitoring
+  labels:
+    app: jaeger
+    part-of: egyptian-map-pi
+    environment: production
+spec:
+  strategy: production  # Production deployment strategy for high availability
+  storage:
+    type: elasticsearch
+    options:
+      es.server-urls: http://elasticsearch:9200
+      es.num-shards: 5  # Optimized for production workload distribution
+      es.num-replicas: 1  # Ensures data redundancy
+      es.index-prefix: egyptian-map-pi
+      es.max-span-age: 7d  # 7-day retention policy for traces
+      es.bulk.size: 5000000  # Optimized bulk indexing
+      es.bulk.workers: 1  # Worker per collector
+      es.bulk.flush-interval: 200ms  # Balanced flush interval
+      es.timeout: 15s  # Extended timeout for production loads
+  
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress-class: nginx
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+  
+  agent:
+    strategy: DaemonSet  # Ensures an agent runs on each node
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    options:
+      log-level: info
+      reporter.grpc.host-port: "jaeger-collector:14250"
+      reporter.type: "grpc"
+      reporter.max-queue-size: 1000
+  
+  collector:
+    replicas: 2  # High availability setup
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 80
+    options:
+      collector.queue-size: 2000
+      collector.num-workers: 50
+      collector.grpc.tls.enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "14269"
+  
+  query:
+    replicas: 2  # High availability setup
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    options:
+      query.max-clock-skew-adjustment: 0s
+      query.timeout: 30s
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "16687"
+  
+  sampling:
+    options:
+      default_strategy:
+        type: probabilistic
+        param: 0.1  # Sample 10% of traces in production
+      service_strategies:
+        - service: auth-service
+          type: probabilistic
+          param: 1.0  # Full sampling for auth service
+        - service: payment-service
+          type: probabilistic
+          param: 1.0  # Full sampling for payment service
+  
+  volumeMounts:
+    - name: certificates
+      mountPath: /etc/certificates
+      readOnly: true
+  
+  volumes:
+    - name: certificates
+      secret:
+        secretName: jaeger-tls
+  
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - jaeger
+            topologyKey: kubernetes.io/hostname
+  
+  tolerations:
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+  
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
