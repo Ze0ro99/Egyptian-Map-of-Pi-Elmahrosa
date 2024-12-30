@@ -1,0 +1,263 @@
+# ELK Stack Kubernetes Manifest for Egyptian Map of Pi
+# Version: 8.9.0
+# Purpose: Centralized logging and security monitoring infrastructure
+apiVersion: v1
+kind: List
+items:
+# Elasticsearch StatefulSet
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: elasticsearch
+    namespace: monitoring
+    labels:
+      app: elasticsearch
+      part-of: egyptian-map-pi
+      component: logging
+  spec:
+    replicas: 3
+    serviceName: elasticsearch
+    selector:
+      matchLabels:
+        app: elasticsearch
+    updateStrategy:
+      type: RollingUpdate
+    podManagementPolicy: Parallel
+    template:
+      metadata:
+        labels:
+          app: elasticsearch
+      spec:
+        securityContext:
+          fsGroup: 1000
+          runAsUser: 1000
+        initContainers:
+        - name: fix-permissions
+          image: busybox:1.28
+          command: ["sh", "-c", "chown -R 1000:1000 /usr/share/elasticsearch/data"]
+          volumeMounts:
+          - name: data
+            mountPath: /usr/share/elasticsearch/data
+        - name: increase-vm-max-map
+          image: busybox:1.28
+          command: ["sysctl", "-w", "vm.max_map_count=262144"]
+          securityContext:
+            privileged: true
+        containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+          resources:
+            requests:
+              cpu: "2000m"
+              memory: "4Gi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+          env:
+          - name: cluster.name
+            value: "egyptian-map-pi-logs"
+          - name: node.name
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: discovery.seed_hosts
+            value: "elasticsearch-0.elasticsearch,elasticsearch-1.elasticsearch,elasticsearch-2.elasticsearch"
+          - name: cluster.initial_master_nodes
+            value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
+          - name: ES_JAVA_OPTS
+            value: "-Xms2g -Xmx2g"
+          - name: xpack.security.enabled
+            value: "true"
+          - name: xpack.monitoring.collection.enabled
+            value: "true"
+          ports:
+          - name: rest
+            containerPort: 9200
+          - name: inter-node
+            containerPort: 9300
+          volumeMounts:
+          - name: data
+            mountPath: /usr/share/elasticsearch/data
+          readinessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /_cluster/health
+              port: 9200
+            initialDelaySeconds: 20
+            periodSeconds: 10
+    volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: ebs-gp3
+        resources:
+          requests:
+            storage: 100Gi
+
+# Logstash Deployment
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: logstash
+    namespace: monitoring
+    labels:
+      app: logstash
+      part-of: egyptian-map-pi
+      component: logging
+  spec:
+    replicas: 2
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 0
+    selector:
+      matchLabels:
+        app: logstash
+    template:
+      metadata:
+        labels:
+          app: logstash
+      spec:
+        containers:
+        - name: logstash
+          image: docker.elastic.co/logstash/logstash:8.9.0
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+          env:
+          - name: LS_JAVA_OPTS
+            value: "-Xms1g -Xmx1g"
+          - name: PIPELINE_WORKERS
+            value: "2"
+          - name: XPACK_MONITORING_ENABLED
+            value: "true"
+          ports:
+          - containerPort: 5044
+            name: beats
+          - containerPort: 9600
+            name: monitoring
+          volumeMounts:
+          - name: config
+            mountPath: /usr/share/logstash/pipeline
+            readOnly: true
+        volumes:
+        - name: config
+          configMap:
+            name: logstash-pipeline
+            items:
+            - key: logstash.conf
+              path: logstash.conf
+
+# Kibana Deployment
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: kibana
+    namespace: monitoring
+    labels:
+      app: kibana
+      part-of: egyptian-map-pi
+      component: logging
+  spec:
+    replicas: 2
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 0
+    selector:
+      matchLabels:
+        app: kibana
+    template:
+      metadata:
+        labels:
+          app: kibana
+      spec:
+        containers:
+        - name: kibana
+          image: docker.elastic.co/kibana/kibana:8.9.0
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+          env:
+          - name: ELASTICSEARCH_HOSTS
+            value: "https://elasticsearch:9200"
+          - name: ELASTICSEARCH_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: elastic-credentials
+                key: username
+          - name: ELASTICSEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elastic-credentials
+                key: password
+          - name: XPACK_SECURITY_ENABLED
+            value: "true"
+          - name: XPACK_MONITORING_UI_CONTAINER_ELASTICSEARCH_ENABLED
+            value: "true"
+          ports:
+          - containerPort: 5601
+            name: http
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: 5601
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+
+# Services
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: elasticsearch
+    namespace: monitoring
+    labels:
+      app: elasticsearch
+  spec:
+    clusterIP: None
+    selector:
+      app: elasticsearch
+    ports:
+    - port: 9200
+      name: rest
+    - port: 9300
+      name: inter-node
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: logstash
+    namespace: monitoring
+  spec:
+    selector:
+      app: logstash
+    ports:
+    - port: 5044
+      name: beats
+    - port: 9600
+      name: monitoring
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: kibana
+    namespace: monitoring
+  spec:
+    selector:
+      app: kibana
+    ports:
+    - port: 5601
+      name: http
+    type: ClusterIP
