@@ -1,0 +1,181 @@
+apiVersion: v1
+kind: List
+items:
+# API Gateway Role - High Security Tier
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    name: api-gateway-role
+    namespace: app
+    labels:
+      app: egyptian-map-pi
+      component: api-gateway
+      tier: security
+      security.compliance/level: high
+    annotations:
+      security.compliance/audit-timestamp: "2024-01-01T00:00:00Z"
+      security.compliance/last-review: "2024-01-01"
+      security.policy/auto-rotation: enabled
+  rules:
+  - apiGroups: [""]
+    resources: ["services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets", "configmaps"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch"]
+
+# Auth Service Role - Critical Security Tier
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    name: auth-service-role
+    namespace: app
+    labels:
+      app: egyptian-map-pi
+      component: auth-service
+      tier: security
+      security.compliance/level: critical
+    annotations:
+      security.compliance/audit-timestamp: "2024-01-01T00:00:00Z"
+      security.compliance/last-review: "2024-01-01"
+      security.policy/auto-rotation: enabled
+  rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "update"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+
+# Monitoring Role - Medium Security Tier
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    name: monitoring-role
+    namespace: monitoring
+    labels:
+      app: egyptian-map-pi
+      component: monitoring
+      tier: security
+      security.compliance/level: medium
+    annotations:
+      security.compliance/audit-timestamp: "2024-01-01T00:00:00Z"
+      security.compliance/last-review: "2024-01-01"
+      security.policy/auto-rotation: enabled
+  rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "services", "endpoints", "nodes/metrics"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch", "create", "update"]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods", "nodes"]
+    verbs: ["get", "list", "watch"]
+
+# API Gateway Role Binding
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: api-gateway-binding
+    namespace: app
+    labels:
+      app: egyptian-map-pi
+      component: api-gateway
+      tier: security
+    annotations:
+      security.compliance/audit-timestamp: "2024-01-01T00:00:00Z"
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: api-gateway-role
+  subjects:
+  - kind: ServiceAccount
+    name: api-gateway-sa
+    namespace: app
+
+# Auth Service Role Binding
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: auth-service-binding
+    namespace: app
+    labels:
+      app: egyptian-map-pi
+      component: auth-service
+      tier: security
+    annotations:
+      security.compliance/audit-timestamp: "2024-01-01T00:00:00Z"
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: auth-service-role
+  subjects:
+  - kind: ServiceAccount
+    name: auth-service-sa
+    namespace: app
+
+# Monitoring Role Binding
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: monitoring-binding
+    namespace: monitoring
+    labels:
+      app: egyptian-map-pi
+      component: monitoring
+      tier: security
+    annotations:
+      security.compliance/audit-timestamp: "2024-01-01T00:00:00Z"
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: monitoring-role
+  subjects:
+  - kind: ServiceAccount
+    name: monitoring-sa
+    namespace: monitoring
+
+# Cluster-wide Monitoring Role
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    name: monitoring-cluster-role
+    labels:
+      app: egyptian-map-pi
+      component: monitoring
+      tier: security
+      security.compliance/level: medium
+    annotations:
+      security.compliance/audit-timestamp: "2024-01-01T00:00:00Z"
+      security.compliance/last-review: "2024-01-01"
+  rules:
+  - apiGroups: [""]
+    resources: ["nodes", "nodes/metrics", "nodes/stats"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+
+# Cluster-wide Monitoring Role Binding
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    name: monitoring-cluster-binding
+    labels:
+      app: egyptian-map-pi
+      component: monitoring
+      tier: security
+    annotations:
+      security.compliance/audit-timestamp: "2024-01-01T00:00:00Z"
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: monitoring-cluster-role
+  subjects:
+  - kind: ServiceAccount
+    name: monitoring-sa
+    namespace: monitoring
