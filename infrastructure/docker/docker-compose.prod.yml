@@ -1,0 +1,177 @@
+version: "3.9"
+
+services:
+  # Frontend Web Application
+  web:
+    image: egyptian-map-pi/web:1.0.0
+    build:
+      context: ./src/web
+      dockerfile: Dockerfile
+      target: production
+      args:
+        NODE_ENV: production
+        REGION: egypt
+    ports:
+      - "443:443"
+      - "80:80"
+    environment:
+      - TZ=Africa/Cairo
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=https://api.egyptianmapofpi.com
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    networks:
+      - app-network
+    volumes:
+      - web-static:/usr/share/nginx/html
+      - nginx-logs:/var/log/nginx
+      - nginx-cache:/var/cache/nginx
+      - ssl-certs:/etc/nginx/ssl
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    user: nonroot
+
+  # Backend API Gateway
+  api-gateway:
+    image: egyptian-map-pi/backend:1.0.0
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - TZ=Africa/Cairo
+      - REDIS_URL=redis://redis:6379
+      - MONGODB_URI=mongodb://mongodb:27017/egyptian-map-pi
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+      - redis
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    user: nodejs
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0.8
+    command: ["mongod", "--bind_ip_all", "--replSet", "rs0"]
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongo_root_username
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo_root_password
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    user: mongodb
+
+  # Redis Cache
+  redis:
+    image: redis:7.0.12-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 2gb --maxmemory-policy allkeys-lru
+    environment:
+      - TZ=Africa/Cairo
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    user: redis
+
+networks:
+  app-network:
+    driver: overlay
+    driver_opts:
+      encrypted: "true"
+    attachable: true
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.0.0.0/16
+          ip_range: 10.0.1.0/24
+
+volumes:
+  mongodb_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /data/mongodb
+      o: bind,noexec,nosuid,nodev
+  mongodb_config:
+    driver: local
+  redis_data:
+    driver: local
+  web-static:
+    driver: local
+  nginx-logs:
+    driver: local
+  nginx-cache:
+    driver: local
+  ssl-certs:
+    driver: local
+
+secrets:
+  mongo_root_username:
+    external: true
+  mongo_root_password:
+    external: true
+  redis_password:
+    external: true
+  ssl_certificate:
+    external: true
+  ssl_private_key:
+    external: true
