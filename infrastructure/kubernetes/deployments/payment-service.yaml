@@ -1,0 +1,138 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: app
+  labels:
+    app: payment-service
+    part-of: egyptian-map-pi
+    version: 1.0.0
+  annotations:
+    security.policy/version: v1
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3003"
+    prometheus.io/path: "/metrics"
+
+spec:
+  # Run 3 replicas for high availability across zones
+  replicas: 3
+  
+  # Zero-downtime rolling updates
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+      
+  selector:
+    matchLabels:
+      app: payment-service
+      
+  template:
+    metadata:
+      labels:
+        app: payment-service
+        version: 1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3003"
+        prometheus.io/path: "/metrics"
+        
+    spec:
+      containers:
+      - name: payment-service
+        image: egyptian-map-pi/payment-service:1.0.0
+        imagePullPolicy: Always
+        
+        # Expose HTTP API and metrics ports
+        ports:
+        - name: http
+          containerPort: 3003
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+          
+        # Environment configuration
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: PI_NETWORK_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: payment-service-secrets
+              key: pi-network-api-key
+        - name: ESCROW_SERVICE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: payment-service-secrets
+              key: escrow-service-key
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: payment-service-secrets
+              key: encryption-key
+              
+        # Resource limits and requests
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+            
+        # Health checking
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3003
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 5
+          failureThreshold: 3
+          
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3003
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 2
+          
+        startupProbe:
+          httpGet:
+            path: /startup
+            port: 3003
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 30
+          
+      # Security context for non-root execution
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+          
+      # Pod anti-affinity for zone distribution
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - payment-service
+              topologyKey: topology.kubernetes.io/zone
+              
+      # Node tolerations for payment workloads
+      tolerations:
+      - key: node-role.kubernetes.io/payment
+        operator: Exists
+        effect: NoSchedule
