@@ -1,0 +1,64 @@
+# Egyptian Map of Pi - Robots.txt Configuration
+# Last Updated: 2023
+# Review Frequency: Monthly
+
+# Default rules for all crawlers
+User-agent: *
+# Allow public marketplace sections
+Allow: /
+Allow: /categories
+Allow: /listings
+Allow: /search
+
+# Protect sensitive endpoints and private data
+Disallow: /api/
+Disallow: /messages/
+Disallow: /payments/
+Disallow: /profile/
+Disallow: /*.json$
+Disallow: /admin/
+Disallow: /auth/
+
+# Implement rate control for server stability
+Crawl-delay: 10
+
+# Reference to complete sitemap
+Sitemap: https://egyptianmapofpi.com/sitemap.xml
+
+# Block AI training bots
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: GoogleBot-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+# Block potential data harvesting bots
+User-agent: PetalBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+# Regional search engine support
+User-agent: Arabbot
+Allow: /
+Allow: /categories
+Allow: /listings
+Allow: /search
+Disallow: /api/
+Disallow: /messages/
+Disallow: /payments/
+Disallow: /profile/
+Disallow: /*.json$
+Disallow: /admin/
+Disallow: /auth/
+Crawl-delay: 5
+
+# Host-specific directive
+Host: egyptianmapofpi.com
