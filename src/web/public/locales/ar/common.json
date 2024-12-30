@@ -1,0 +1,136 @@
+{
+  "app": {
+    "name": "خريطة باي المصرية",
+    "description": "سوق مصري آمن للتداول بعملة باي",
+    "welcome": "مرحباً بك في خريطة باي المصرية",
+    "tagline": "تسوق بأمان باستخدام عملة باي"
+  },
+  "navigation": {
+    "home": "الرئيسية",
+    "search": "البحث",
+    "categories": "الفئات",
+    "messages": "الرسائل",
+    "profile": "الملف الشخصي",
+    "addListing": "إضافة إعلان",
+    "settings": "الإعدادات",
+    "merchantDashboard": "لوحة التحكم للتجار",
+    "myListings": "إعلاناتي",
+    "transactions": "المعاملات",
+    "analytics": "التحليلات"
+  },
+  "actions": {
+    "back": "رجوع",
+    "next": "التالي",
+    "submit": "إرسال",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "close": "إغلاق",
+    "confirm": "تأكيد",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "share": "مشاركة",
+    "report": "إبلاغ"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "loginWithPi": "تسجيل الدخول باستخدام باي",
+    "registerAsMerchant": "التسجيل كتاجر",
+    "verifyIdentity": "تأكيد الهوية",
+    "completeKYC": "إكمال التحقق من الهوية",
+    "merchantVerification": "التحقق من التاجر"
+  },
+  "location": {
+    "currentLocation": "الموقع الحالي",
+    "selectLocation": "اختر الموقع",
+    "searchLocation": "البحث عن موقع",
+    "locationPermission": "السماح بالوصول إلى الموقع",
+    "governorates": {
+      "cairo": "القاهرة",
+      "alexandria": "الإسكندرية",
+      "giza": "الجيزة"
+    },
+    "distance": {
+      "near": "قريب",
+      "km": "كم",
+      "meters": "متر"
+    }
+  },
+  "transactions": {
+    "payment": "الدفع",
+    "amount": "المبلغ",
+    "piAmount": "المبلغ بالباي",
+    "escrow": "الضمان",
+    "status": {
+      "pending": "قيد الانتظار",
+      "completed": "مكتمل",
+      "cancelled": "ملغي",
+      "disputed": "متنازع عليه"
+    },
+    "actions": {
+      "pay": "دفع",
+      "release": "تحرير الدفعة",
+      "dispute": "فتح نزاع",
+      "cancel": "إلغاء المعاملة"
+    }
+  },
+  "errors": {
+    "general": "حدث خطأ ما",
+    "network": "خطأ في الاتصال",
+    "required": "هذا الحقل مطلوب",
+    "invalid": "قيمة غير صالحة",
+    "unauthorized": "غير مصرح به",
+    "notFound": "الصفحة غير موجودة",
+    "paymentFailed": "فشل الدفع",
+    "insufficientBalance": "رصيد غير كافٍ",
+    "transactionFailed": "فشلت المعاملة",
+    "locationError": "تعذر تحديد الموقع",
+    "networkTimeout": "انتهت مهلة الاتصال"
+  },
+  "loading": {
+    "general": "جاري التحميل...",
+    "submitting": "جاري الإرسال...",
+    "saving": "جاري الحفظ...",
+    "deleting": "جاري الحذف...",
+    "processing": "جاري المعالجة...",
+    "verifying": "جاري التحقق...",
+    "connecting": "جاري الاتصال..."
+  },
+  "success": {
+    "saved": "تم الحفظ بنجاح",
+    "deleted": "تم الحذف بنجاح",
+    "updated": "تم التحديث بنجاح",
+    "paymentComplete": "تم الدفع بنجاح",
+    "listingCreated": "تم إنشاء الإعلان بنجاح",
+    "messagesSent": "تم إرسال الرسالة بنجاح"
+  },
+  "common": {
+    "yes": "نعم",
+    "no": "لا",
+    "or": "أو",
+    "and": "و",
+    "all": "الكل",
+    "none": "لا شيء",
+    "more": "المزيد",
+    "less": "أقل",
+    "welcome": "أهلاً وسهلاً",
+    "currency": "باي",
+    "egp": "جنيه مصري"
+  },
+  "time": {
+    "now": "الآن",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "tomorrow": "غداً",
+    "minutes": "دقائق",
+    "hours": "ساعات",
+    "days": "أيام",
+    "weeks": "أسابيع",
+    "months": "شهور",
+    "ago": "منذ",
+    "later": "بعد"
+  }
+}
