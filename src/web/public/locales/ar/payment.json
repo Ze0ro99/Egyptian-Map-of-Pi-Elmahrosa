@@ -1,0 +1,85 @@
+{
+  "form": {
+    "title": "إتمام الشراء",
+    "amount": "المبلغ",
+    "amount_placeholder": "أدخل المبلغ بعملة باي",
+    "payment_method": "طريقة الدفع",
+    "pi_wallet": "محفظة باي",
+    "escrow_service": "خدمة الضمان",
+    "escrow_checkbox": "أوافق على استخدام خدمة الضمان من شبكة باي",
+    "escrow_info": "خدمة الضمان تحمي البائع والمشتري",
+    "delivery_method": "طريقة التوصيل",
+    "delivery_placeholder": "اختر طريقة التوصيل",
+    "location": "موقعك",
+    "current_location": "استخدم الموقع الحالي",
+    "select_on_map": "اختر على الخريطة",
+    "buttons": {
+      "cancel": "إلغاء",
+      "pay_now": "ادفع الآن",
+      "processing": "جاري المعالجة..."
+    },
+    "errors": {
+      "minimum_amount": "الحد الأدنى للمبلغ هو ٠.١ باي",
+      "maximum_amount": "الحد الأقصى للمبلغ هو ١٠,٠٠٠ باي",
+      "invalid_amount": "يرجى إدخال مبلغ صحيح",
+      "required_field": "هذا الحقل مطلوب"
+    }
+  },
+  "confirmation": {
+    "title": "تأكيد الدفع",
+    "payment_id": "رقم الدفع",
+    "amount": "المبلغ",
+    "seller": "البائع",
+    "status": "الحالة",
+    "date": "التاريخ",
+    "escrow_status": "حالة الضمان",
+    "buttons": {
+      "close": "إغلاق",
+      "cancel_payment": "إلغاء الدفع",
+      "view_details": "عرض التفاصيل",
+      "contact_seller": "تواصل مع البائع"
+    },
+    "messages": {
+      "processing": "جاري معالجة الدفع...",
+      "success": "تم الدفع بنجاح!",
+      "failed": "فشل الدفع",
+      "cancelled": "تم إلغاء الدفع",
+      "pending": "الدفع قيد الانتظار"
+    }
+  },
+  "history": {
+    "title": "سجل المعاملات",
+    "no_transactions": "لا توجد معاملات",
+    "loading": "جاري تحميل المعاملات...",
+    "table": {
+      "date": "التاريخ",
+      "payment_id": "رقم الدفع",
+      "amount": "المبلغ",
+      "type": "النوع",
+      "status": "الحالة",
+      "actions": "الإجراءات"
+    },
+    "filters": {
+      "all": "الكل",
+      "sent": "مرسل",
+      "received": "مستلم",
+      "pending": "قيد الانتظار",
+      "completed": "مكتمل"
+    },
+    "pagination": {
+      "rows_per_page": "عدد الصفوف في الصفحة:",
+      "of": "من"
+    }
+  },
+  "status": {
+    "pending": "قيد الانتظار",
+    "processing": "قيد المعالجة",
+    "completed": "مكتمل",
+    "failed": "فشل",
+    "cancelled": "ملغي",
+    "refunded": "مسترد",
+    "escrow_held": "في الضمان",
+    "escrow_released": "تم تحرير الضمان",
+    "escrow_disputed": "قيد النزاع"
+  }
+}
