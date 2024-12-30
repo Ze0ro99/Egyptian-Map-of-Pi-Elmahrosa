@@ -1,0 +1,260 @@
+# Grafana Enterprise v9.5.3 Configuration for Egyptian Map of Pi
+# Implements comprehensive monitoring, visualization and security controls
+apiVersion: v1
+kind: List
+items:
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: grafana-config
+    namespace: monitoring
+    labels:
+      app: grafana
+      part-of: egyptian-map-pi
+      environment: production
+  data:
+    grafana.ini: |
+      [server]
+      root_url = https://monitoring.egyptian-map-pi.pi/grafana
+      serve_from_sub_path = true
+      enforce_domain = true
+      protocol = https
+      cert_file = /etc/grafana/certs/tls.crt
+      cert_key = /etc/grafana/certs/tls.key
+      
+      [auth]
+      disable_login_form = false
+      disable_signout_menu = false
+      oauth_auto_login = false
+      login_maximum_inactive_lifetime_duration = 7d
+      login_maximum_lifetime_duration = 30d
+      
+      [security]
+      admin_user = ${GRAFANA_ADMIN_USER}
+      admin_password = ${GRAFANA_ADMIN_PASSWORD}
+      cookie_secure = true
+      cookie_samesite = strict
+      allow_embedding = false
+      strict_transport_security = true
+      strict_transport_security_max_age_seconds = 31536000
+      content_security_policy = true
+      content_security_policy_template = "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+      
+      [users]
+      allow_sign_up = false
+      auto_assign_org = true
+      auto_assign_org_role = Viewer
+      default_theme = light
+      viewers_can_edit = false
+      
+      [analytics]
+      reporting_enabled = false
+      check_for_updates = true
+      
+      [dashboards]
+      versions_to_keep = 20
+      min_refresh_interval = 1m
+      
+      [database]
+      log_queries = true
+      max_open_conn = 100
+      max_idle_conn = 50
+      conn_max_lifetime = 14400
+      
+      [alerting]
+      enabled = true
+      execute_alerts = true
+      max_annotations_to_keep = 1000
+      evaluation_timeout_seconds = 30
+      notification_timeout_seconds = 30
+      
+      [metrics]
+      enabled = true
+      basic_auth_username = ${METRICS_USERNAME}
+      basic_auth_password = ${METRICS_PASSWORD}
+      
+      [log]
+      mode = console file
+      level = info
+      
+      [paths]
+      data = /var/lib/grafana
+      logs = /var/log/grafana
+      plugins = /var/lib/grafana/plugins
+      provisioning = /etc/grafana/provisioning
+
+    datasources.yaml: |
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus-service:9090
+          isDefault: true
+          editable: false
+          jsonData:
+            timeInterval: "30s"
+            queryTimeout: "60s"
+            httpMethod: "POST"
+            manageAlerts: true
+            exemplarTraceIdDestinations:
+              - name: trace_id
+                datasourceUid: tempo
+            alertmanagerUid: alertmanager
+          secureJsonData:
+            httpHeaderValue1: "${PROMETHEUS_API_TOKEN}"
+          version: 1
+          uid: prometheus
+
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: grafana
+    namespace: monitoring
+    labels:
+      app: grafana
+      part-of: egyptian-map-pi
+  spec:
+    replicas: 2
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 1
+        maxSurge: 1
+    selector:
+      matchLabels:
+        app: grafana
+    template:
+      metadata:
+        labels:
+          app: grafana
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "3000"
+      spec:
+        securityContext:
+          fsGroup: 472
+          supplementalGroups:
+            - 0
+        containers:
+          - name: grafana
+            image: grafana/grafana:9.5.3
+            imagePullPolicy: IfNotPresent
+            ports:
+              - containerPort: 3000
+                name: http-grafana
+                protocol: TCP
+            readinessProbe:
+              httpGet:
+                path: /api/health
+                port: 3000
+              initialDelaySeconds: 30
+              timeoutSeconds: 5
+            livenessProbe:
+              httpGet:
+                path: /api/health
+                port: 3000
+              initialDelaySeconds: 60
+              timeoutSeconds: 5
+            resources:
+              requests:
+                cpu: 200m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+            volumeMounts:
+              - name: config
+                mountPath: /etc/grafana/grafana.ini
+                subPath: grafana.ini
+              - name: config
+                mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+                subPath: datasources.yaml
+              - name: storage
+                mountPath: /var/lib/grafana
+              - name: certs
+                mountPath: /etc/grafana/certs
+                readOnly: true
+            env:
+              - name: GF_SECURITY_ADMIN_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: grafana-credentials
+                    key: admin-user
+              - name: GF_SECURITY_ADMIN_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: grafana-credentials
+                    key: admin-password
+              - name: GF_INSTALL_PLUGINS
+                value: "grafana-piechart-panel,grafana-worldmap-panel"
+        volumes:
+          - name: config
+            configMap:
+              name: grafana-config
+          - name: storage
+            persistentVolumeClaim:
+              claimName: grafana-pvc
+          - name: certs
+            secret:
+              secretName: grafana-certs
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                      - key: app
+                        operator: In
+                        values:
+                          - grafana
+                  topologyKey: kubernetes.io/hostname
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: grafana-service
+    namespace: monitoring
+    labels:
+      app: grafana
+      part-of: egyptian-map-pi
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "3000"
+  spec:
+    type: ClusterIP
+    ports:
+      - port: 3000
+        targetPort: 3000
+        protocol: TCP
+        name: http
+    selector:
+      app: grafana
+
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: grafana-ingress
+    namespace: monitoring
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+  spec:
+    tls:
+      - hosts:
+          - monitoring.egyptian-map-pi.pi
+        secretName: grafana-tls
+    rules:
+      - host: monitoring.egyptian-map-pi.pi
+        http:
+          paths:
+            - path: /grafana
+              pathType: Prefix
+              backend:
+                service:
+                  name: grafana-service
+                  port:
+                    number: 3000
