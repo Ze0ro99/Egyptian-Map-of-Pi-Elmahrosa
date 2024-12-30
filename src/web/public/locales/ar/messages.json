@@ -1,0 +1,86 @@
+{
+  "chat": {
+    "title": "الرسائل",
+    "newMessage": "رسالة جديدة",
+    "noMessages": "لا توجد رسائل",
+    "loadMore": "تحميل المزيد",
+    "typeMessage": "اكتب رسالتك...",
+    "send": "إرسال",
+    "attachImage": "إرفاق صورة",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "lastSeen": "آخر ظهور {{time}}",
+    "searchPlaceholder": "البحث في الرسائل...",
+    "archiveChat": "أرشفة المحادثة",
+    "unarchiveChat": "إلغاء أرشفة المحادثة",
+    "typing": "يكتب...",
+    "recording": "يسجل رسالة صوتية..."
+  },
+  "status": {
+    "sent": "تم الإرسال",
+    "delivered": "تم التوصيل",
+    "read": "تم القراءة",
+    "failed": "فشل الإرسال",
+    "pending": "جاري الإرسال",
+    "uploading": "جاري الرفع...",
+    "downloading": "جاري التحميل..."
+  },
+  "errors": {
+    "sendFailed": "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى",
+    "loadFailed": "فشل تحميل الرسائل",
+    "networkError": "خطأ في الشبكة",
+    "invalidMessage": "رسالة غير صالحة",
+    "unauthorized": "يرجى تسجيل الدخول للمحادثة",
+    "blockedUser": "لا يمكنك إرسال رسائل لهذا المستخدم",
+    "fileTooBig": "حجم الملف كبير جداً",
+    "unsupportedFile": "نوع الملف غير مدعوم",
+    "rateLimited": "يرجى الانتظار قبل إرسال المزيد من الرسائل"
+  },
+  "conversation": {
+    "with": "محادثة مع {{name}}",
+    "about": "حول {{item}}",
+    "price": "السعر: {{amount}} Pi",
+    "startChat": "بدء المحادثة",
+    "block": "حظر المستخدم",
+    "report": "الإبلاغ عن المحتوى",
+    "delete": "حذف المحادثة",
+    "confirmDelete": "هل أنت متأكد من رغبتك في حذف هذه المحادثة؟",
+    "mute": "كتم الإشعارات",
+    "unmute": "تفعيل الإشعارات",
+    "pin": "تثبيت المحادثة",
+    "unpin": "إلغاء تثبيت المحادثة",
+    "markAsRead": "تحديد كمقروء",
+    "markAsUnread": "تحديد كغير مقروء"
+  },
+  "notifications": {
+    "newMessage": "رسالة جديدة من {{sender}}",
+    "messageRequest": "طلب محادثة جديد",
+    "accepted": "تم قبول طلب المحادثة",
+    "declined": "تم رفض طلب المحادثة",
+    "newOffer": "عرض جديد على {{item}}",
+    "offerAccepted": "تم قبول عرضك",
+    "offerDeclined": "تم رفض عرضك",
+    "paymentReceived": "تم استلام الدفعة",
+    "paymentSent": "تم إرسال الدفعة"
+  },
+  "media": {
+    "photo": "صورة",
+    "video": "فيديو",
+    "audio": "تسجيل صوتي",
+    "document": "مستند",
+    "location": "الموقع",
+    "contact": "جهة اتصال"
+  },
+  "actions": {
+    "copy": "نسخ",
+    "forward": "إعادة توجيه",
+    "reply": "رد",
+    "edit": "تعديل",
+    "share": "مشاركة",
+    "download": "تحميل",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد"
+  }
+}
