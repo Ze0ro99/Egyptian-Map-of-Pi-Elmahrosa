@@ -1,0 +1,150 @@
+/* Egyptian Map of Pi - RTL Styles
+ * Version: 1.0.0
+ * Description: Right-to-Left (RTL) specific styles for Arabic language support
+ * Dependencies: theme.css (v1.0.0)
+ */
+
+/* Global RTL Styles */
+[dir='rtl'] {
+  text-align: right;
+  direction: rtl;
+  font-family: var(--font-family-arabic), var(--font-family-english);
+  line-height: 1.6;
+  letter-spacing: normal;
+}
+
+[dir='rtl'] * {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* RTL Layout Utilities */
+.rtl-layout {
+  /* Container */
+  &.rtl-container {
+    margin-left: unset;
+    margin-right: auto;
+    padding-left: unset;
+    padding-right: var(--spacing-unit);
+    text-align: right;
+  }
+
+  /* Flex Layouts */
+  &.rtl-flex {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+
+  /* Grid Layouts */
+  &.rtl-grid {
+    direction: rtl;
+    grid-auto-flow: row dense;
+  }
+}
+
+/* RTL Component Overrides */
+.rtl-components {
+  /* Form Inputs */
+  &.rtl-input {
+    text-align: right;
+    padding-right: var(--spacing-unit);
+    padding-left: unset;
+    direction: rtl;
+  }
+
+  /* Buttons */
+  &.rtl-button {
+    margin-left: unset;
+    margin-right: var(--spacing-unit);
+    flex-direction: row-reverse;
+  }
+
+  /* Icons */
+  &.rtl-icon {
+    transform: scaleX(-1);
+    margin-left: unset;
+    margin-right: var(--spacing-unit);
+  }
+
+  /* Drawer/Sidebar */
+  &.rtl-drawer {
+    left: unset;
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  /* Tooltips */
+  &.rtl-tooltip {
+    left: unset;
+    right: 100%;
+    direction: rtl;
+  }
+}
+
+/* RTL Navigation Styles */
+.rtl-navigation {
+  /* Navigation Items */
+  &.rtl-nav-item {
+    margin-left: unset;
+    margin-right: var(--spacing-unit);
+    border-left: unset;
+    border-right: 1px solid var(--border-color);
+  }
+
+  /* Dropdowns */
+  &.rtl-dropdown {
+    left: unset;
+    right: 0;
+    transform-origin: top right;
+  }
+
+  /* Breadcrumbs */
+  &.rtl-breadcrumb {
+    flex-direction: row-reverse;
+    padding-right: 0;
+  }
+}
+
+/* RTL Animations */
+.rtl-animations {
+  /* Slide Animations */
+  &.rtl-slide {
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  /* Fade Animations */
+  &.rtl-fade {
+    transform-origin: right center;
+  }
+}
+
+/* Tablet and Desktop RTL Adjustments */
+@media (min-width: 768px) {
+  .rtl-sidebar {
+    left: unset;
+    right: 0;
+    border-left: none;
+    border-right: 1px solid var(--border-color);
+  }
+
+  .rtl-content {
+    margin-left: unset;
+    margin-right: var(--sidebar-width);
+    padding-left: unset;
+    padding-right: var(--spacing-unit);
+  }
+
+  .rtl-grid-tablet {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    direction: rtl;
+  }
+}
+
+/* Print Styles */
+@media print {
+  [dir='rtl'] {
+    text-align: right;
+    direction: rtl;
+  }
+}
