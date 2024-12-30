@@ -1,0 +1,138 @@
+apiVersion: networking.k8s.io/v1
+kind: List
+items:
+  # Default deny-all policy to establish zero-trust baseline
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: default-deny-all
+      namespace: app
+      labels:
+        app.kubernetes.io/part-of: egyptian-map-pi
+        app.kubernetes.io/component: network-security
+      annotations:
+        security.egyptian-map-pi.io/policy-type: zero-trust-default
+        security.egyptian-map-pi.io/last-reviewed: "2023-10-01"
+        description: "Default deny policy for zero-trust networking baseline"
+    spec:
+      podSelector: {} # Applies to all pods in namespace
+      policyTypes:
+        - Ingress
+        - Egress
+
+  # Allow API Gateway ingress from monitoring namespace
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-api-gateway-ingress
+      namespace: app
+      labels:
+        app.kubernetes.io/part-of: egyptian-map-pi
+        app.kubernetes.io/component: network-security
+      annotations:
+        security.egyptian-map-pi.io/policy-type: service-ingress
+        security.egyptian-map-pi.io/last-reviewed: "2023-10-01"
+        description: "Allows monitored ingress traffic to API Gateway"
+    spec:
+      podSelector:
+        matchLabels:
+          app: api-gateway
+          security.egyptian-map-pi.io/component: gateway
+      policyTypes:
+        - Ingress
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  name: monitoring
+                  security.egyptian-map-pi.io/trusted: "true"
+          ports:
+            - port: 3000
+              protocol: TCP
+
+  # Allow internal service communication
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-internal-communication
+      namespace: app
+      labels:
+        app.kubernetes.io/part-of: egyptian-map-pi
+        app.kubernetes.io/component: network-security
+      annotations:
+        security.egyptian-map-pi.io/policy-type: internal-communication
+        security.egyptian-map-pi.io/last-reviewed: "2023-10-01"
+        description: "Allows communication between internal microservices"
+    spec:
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/part-of: egyptian-map-pi
+      policyTypes:
+        - Ingress
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: egyptian-map-pi
+              namespaceSelector:
+                matchLabels:
+                  name: app
+          ports:
+            - port: 8080
+              protocol: TCP
+            - port: 9090
+              protocol: TCP
+
+  # Allow DNS resolution
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-dns-resolution
+      namespace: app
+      labels:
+        app.kubernetes.io/part-of: egyptian-map-pi
+        app.kubernetes.io/component: network-security
+      annotations:
+        security.egyptian-map-pi.io/policy-type: dns-access
+        security.egyptian-map-pi.io/last-reviewed: "2023-10-01"
+        description: "Allows DNS resolution for all pods"
+    spec:
+      podSelector: {}
+      policyTypes:
+        - Egress
+      egress:
+        - to:
+            - namespaceSelector: {}
+          ports:
+            - port: 53
+              protocol: UDP
+            - port: 53
+              protocol: TCP
+
+  # Allow metrics collection by Prometheus
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-prometheus-scraping
+      namespace: app
+      labels:
+        app.kubernetes.io/part-of: egyptian-map-pi
+        app.kubernetes.io/component: network-security
+      annotations:
+        security.egyptian-map-pi.io/policy-type: monitoring-access
+        security.egyptian-map-pi.io/last-reviewed: "2023-10-01"
+        description: "Allows Prometheus to scrape metrics from pods"
+    spec:
+      podSelector:
+        matchLabels:
+          prometheus.io/scrape: "true"
+      policyTypes:
+        - Ingress
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  name: monitoring
+          ports:
+            - port: 9090
+              protocol: TCP
