@@ -1,0 +1,142 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: location-service
+  namespace: egyptian-map-pi
+  labels:
+    app: location-service
+    part-of: egyptian-map-pi
+    component: core
+    tier: backend
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubernetes.io/change-cause: "Initial deployment of location service"
+spec:
+  # High availability requirement with 3 replicas
+  replicas: 3
+  # Zero-downtime updates with rolling deployment
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: location-service
+  template:
+    metadata:
+      labels:
+        app: location-service
+        part-of: egyptian-map-pi
+        component: core
+        tier: backend
+      annotations:
+        # Prometheus monitoring integration
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3002"
+        prometheus.io/path: "/metrics"
+        checksum/config: "${CONFIG_CHECKSUM}"
+    spec:
+      # Graceful shutdown period
+      terminationGracePeriodSeconds: 60
+      # Security context for non-root execution
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+      containers:
+        - name: location-service
+          image: egyptian-map-pi/location-service:${VERSION}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3002
+              name: http
+              protocol: TCP
+            - containerPort: 9090
+              name: metrics
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3002"
+            - name: METRICS_PORT
+              value: "9090"
+            # Secure database credentials
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-credentials
+                  key: uri
+            # Secure maps API credentials
+            - name: MAPS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: maps-credentials
+                  key: api-key
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          # Health checks for high availability
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 2
+          startupProbe:
+            httpGet:
+              path: /health/startup
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 12
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+            - name: tmp-volume
+              mountPath: /tmp
+      volumes:
+        # Mount configuration from ConfigMap
+        - name: config-volume
+          configMap:
+            name: location-service-config
+        # Temporary storage volume
+        - name: tmp-volume
+          emptyDir: {}
+      # Pod anti-affinity for high availability
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - location-service
+                topologyKey: kubernetes.io/hostname
+        # Node affinity for regional deployment
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/region
+                    operator: In
+                    values:
+                      - me-south-1
