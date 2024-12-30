@@ -1,0 +1,65 @@
+{
+  "compilerOptions": {
+    // ES2022 target as specified in requirements for modern JavaScript features
+    "target": "es2022",
+    
+    // Include necessary lib files for web development
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    
+    // Module configuration
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    
+    // React configuration
+    "jsx": "preserve",
+    
+    // Strict type checking
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    
+    // Build configuration
+    "noEmit": true,
+    "incremental": true,
+    "allowJs": true,
+    
+    // Path aliases for cleaner imports
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    
+    // Type definitions
+    "types": [
+      "node",
+      "jest",
+      "react",
+      "react-dom"
+    ]
+  },
+  
+  // Files to include in compilation
+  "include": [
+    "next-env.d.ts",
+    "src/types/environment.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  
+  // Files to exclude from compilation
+  "exclude": [
+    "node_modules",
+    ".next",
+    "out",
+    "coverage",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ]
+}
