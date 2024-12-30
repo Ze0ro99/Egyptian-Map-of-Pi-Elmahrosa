@@ -1,0 +1,79 @@
+# Requires core team review for any changes not covered by specific rules
+* @core-team
+
+# Backend service implementations
+src/backend/ @backend-team
+
+# Frontend web application code
+src/web/ @frontend-team
+
+# Authentication service - requires security team review
+src/backend/auth-service/ @security-team @backend-team
+
+# Payment service - requires security team review
+src/backend/payment-service/ @security-team @backend-team
+
+# Infrastructure and deployment configurations
+infrastructure/ @devops-team
+
+# Kubernetes security configurations - requires both security and devops review
+infrastructure/kubernetes/security/ @security-team @devops-team
+
+# CI/CD workflow configurations - requires security validation
+.github/workflows/ @devops-team @security-team
+
+# Shared validation utilities - requires security review
+src/backend/shared/validators/ @security-team @backend-team
+
+# Frontend validation implementations - requires security oversight
+src/web/src/validators/ @security-team @frontend-team
+
+# Test implementations including security testing
+src/**/tests/ @qa-team @security-team
+
+# Monitoring and security telemetry configurations
+infrastructure/kubernetes/monitoring/ @devops-team @sre-team @security-team
+
+# Security documentation and compliance requirements
+docs/security/ @security-team @core-team
+
+# Service configuration files requiring security review
+src/**/config/ @security-team @devops-team
+
+# Specific workflow files with enhanced security requirements
+.github/workflows/ci.yml @devops-team @security-team
+.github/workflows/cd.yml @devops-team @security-team
+.github/workflows/security-scan.yml @security-team @devops-team
+
+# Package dependencies and lock files
+package.json @security-team @devops-team
+package-lock.json @security-team @devops-team
+yarn.lock @security-team @devops-team
+
+# Database schema and migration files
+src/**/migrations/ @backend-team @security-team
+src/**/schemas/ @backend-team @security-team
+
+# API specifications and documentation
+api/ @backend-team @security-team
+docs/api/ @backend-team @security-team
+
+# Environment configurations
+.env.example @security-team @devops-team
+src/**/.env.example @security-team @devops-team
+
+# Security policy and compliance documentation
+SECURITY.md @security-team @core-team
+security-policy.md @security-team @core-team
+
+# Dependency security configurations
+.snyk @security-team
+.npmrc @security-team @devops-team
+
+# Container security configurations
+**/Dockerfile @security-team @devops-team
+docker-compose*.yml @security-team @devops-team
+
+# Load testing and performance configurations
+load-tests/ @qa-team @sre-team @security-team
+performance-tests/ @qa-team @sre-team @security-team
