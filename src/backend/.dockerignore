@@ -1,0 +1,151 @@
+node_modules
+**/node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Build outputs
+dist
+**/dist
+build
+**/build
+*.tsbuildinfo
+
+# Development and test files
+**/*.test.js
+**/*.spec.js
+**/__tests__
+**/coverage
+.nyc_output
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Environment and configuration files
+.env*
+.env.local
+.env.development
+.env.test
+.env.production
+**/.env*
+**/config/secrets*
+
+# Documentation and markdown files
+*.md
+docs
+**/docs
+CHANGELOG
+LICENSE
+
+# Service-specific exclusions
+# API Gateway
+src/backend/api-gateway/dist
+src/backend/api-gateway/node_modules
+src/backend/api-gateway/logs
+src/backend/api-gateway/coverage
+src/backend/api-gateway/tmp
+
+# Auth Service
+src/backend/auth-service/dist
+src/backend/auth-service/node_modules
+src/backend/auth-service/keys
+src/backend/auth-service/certificates
+src/backend/auth-service/secrets
+src/backend/auth-service/logs
+
+# Marketplace Service
+src/backend/marketplace-service/dist
+src/backend/marketplace-service/node_modules
+src/backend/marketplace-service/uploads
+src/backend/marketplace-service/temp
+src/backend/marketplace-service/logs
+
+# Location Service
+src/backend/location-service/dist
+src/backend/location-service/node_modules
+src/backend/location-service/cache
+src/backend/location-service/logs
+
+# Payment Service
+src/backend/payment-service/dist
+src/backend/payment-service/node_modules
+src/backend/payment-service/keys
+src/backend/payment-service/logs
+
+# Messaging Service
+src/backend/messaging-service/dist
+src/backend/messaging-service/node_modules
+src/backend/messaging-service/uploads
+src/backend/messaging-service/logs
+
+# Log files
+**/*.log
+logs
+**/logs
+log
+**/log
+
+# Temporary files
+tmp
+**/tmp
+temp
+**/temp
+*.tmp
+*.temp
+
+# Docker related
+Dockerfile*
+docker-compose*.yml
+.docker
+
+# Debug files
+**/*.debug
+**/*.dump
+
+# Backup files
+**/*.bak
+**/*.backup
+**/backup
+**/*~
+
+# System files
+**/.DS_Store
+**/Thumbs.db
+
+# Package files (let npm/yarn install handle dependencies)
+package-lock.json
+**/package-lock.json
+yarn.lock
+**/yarn.lock
+
+# Test files and fixtures
+**/__mocks__
+**/test
+**/tests
+**/*.test.*
+**/*.spec.*
+**/fixtures
+**/mock*
+
+# Miscellaneous
+.npmrc
+.yarnrc
+.editorconfig
+.prettierrc
+.eslintrc
+.eslintignore
+.babelrc
+tsconfig.json
+**/tsconfig.json
+jest.config.js
+**/jest.config.js
