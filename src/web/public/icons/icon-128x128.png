@@ -1,0 +1,62 @@
+Dimensions: 128 x 128 pixels
+Format: PNG
+Color Space: sRGB
+Transparency: Enabled
+Purpose: any maskable
+
+Design Elements:
+1. Primary Shape:
+- Circular base shape with 40% safe zone
+- Material Design elevation with subtle shadow
+- Adaptive icon support with maskable area
+
+2. Colors:
+- Primary: #1B4D89 (Egyptian Map of Pi brand blue)
+- Background: #F5F5F5 (Light neutral)
+- Accent elements using brand color derivatives
+- Dark mode compatible with sufficient contrast
+
+3. Icon Elements:
+- Stylized "Pi" symbol incorporating Arabic calligraphy
+- Egyptian map outline as a subtle background element
+- Material Design principles for depth and elevation
+- Minimum 1px stroke width at 128x128
+
+4. Cultural Integration:
+- Arabic calligraphic influence in the Pi symbol
+- Traditional Egyptian patterns in background
+- Cultural color symbolism maintained
+- Balanced modern and traditional elements
+
+Technical Requirements:
+1. File Optimization:
+- PNG format with 32-bit color depth
+- Compression level: 8 (optimized)
+- Target file size: < 10KB
+- No dithering or interlacing
+- Optimized for web delivery
+
+2. Platform Support:
+- Maskable icon support for Android
+- Retina-ready for iOS
+- High contrast ratio (4.5:1 minimum)
+- Clear visibility at 128x128 size
+- Cross-browser compatible
+
+3. Accessibility:
+- Color blind friendly design
+- High contrast elements
+- Recognizable at target size
+- Dark mode compatible
+
+4. Quality Assurance:
+- Pixel-perfect alignment
+- Sharp edges at 1x and 2x
+- No artifacts from compression
+- Consistent appearance across platforms
+
+Asset Management:
+Source File: src/design/icons/source/icon-128x128.psd
+Version: 1.0.0
+Last Modified: [Current ISO Date]
+Modified By: [Designer ID]
