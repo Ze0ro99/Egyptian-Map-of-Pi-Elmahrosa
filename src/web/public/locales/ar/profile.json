@@ -1,0 +1,135 @@
+{
+  "title": {
+    "profile": "الملف الشخصي",
+    "editProfile": "تعديل الملف الشخصي",
+    "merchantProfile": "ملف التاجر",
+    "editMerchantProfile": "تعديل ملف التاجر",
+    "settings": "إعدادات الملف الشخصي",
+    "verificationStatus": "حالة التحقق من الهوية"
+  },
+  "sections": {
+    "personalInfo": "المعلومات الشخصية",
+    "merchantInfo": "معلومات التاجر",
+    "contactInfo": "معلومات الاتصال",
+    "locationInfo": "معلومات الموقع",
+    "preferences": "التفضيلات",
+    "verification": "التحقق من الهوية",
+    "businessDocuments": "المستندات التجارية",
+    "bankInfo": "المعلومات البنكية"
+  },
+  "fields": {
+    "name": {
+      "label": "الاسم الكامل",
+      "placeholder": "أدخل اسمك الكامل",
+      "error": "الاسم الكامل مطلوب"
+    },
+    "phone": {
+      "label": "رقم الهاتف",
+      "placeholder": "أدخل رقم هاتفك المصري",
+      "error": "رقم هاتف مصري صحيح مطلوب",
+      "format": "مثال: 01XXXXXXXXX"
+    },
+    "email": {
+      "label": "البريد الإلكتروني",
+      "placeholder": "أدخل بريدك الإلكتروني",
+      "error": "بريد إلكتروني صحيح مطلوب"
+    },
+    "businessName": {
+      "label": "اسم النشاط التجاري",
+      "placeholder": "أدخل اسم نشاطك التجاري",
+      "error": "اسم النشاط التجاري مطلوب"
+    },
+    "businessType": {
+      "label": "نوع النشاط التجاري",
+      "placeholder": "اختر نوع نشاطك التجاري",
+      "error": "نوع النشاط التجاري مطلوب"
+    },
+    "registrationNumber": {
+      "label": "رقم السجل التجاري",
+      "placeholder": "أدخل رقم السجل التجاري المصري",
+      "error": "رقم سجل تجاري صحيح مطلوب",
+      "format": "مثال: XXXXX-XX"
+    },
+    "taxNumber": {
+      "label": "الرقم الضريبي",
+      "placeholder": "أدخل الرقم الضريبي",
+      "error": "رقم ضريبي صحيح مطلوب"
+    },
+    "location": {
+      "label": "موقع النشاط التجاري",
+      "placeholder": "اختر موقع نشاطك التجاري",
+      "error": "موقع النشاط التجاري مطلوب",
+      "governorate": "المحافظة",
+      "city": "المدينة",
+      "district": "الحي",
+      "street": "الشارع",
+      "buildingNumber": "رقم المبنى"
+    }
+  },
+  "buttons": {
+    "save": "حفظ التغييرات",
+    "cancel": "إلغاء",
+    "becomeMerchant": "كن تاجراً",
+    "uploadPhoto": "رفع صورة",
+    "removePhoto": "إزالة الصورة",
+    "updateLocation": "تحديث الموقع",
+    "verify": "تحقق من الهوية",
+    "uploadDocuments": "رفع المستندات",
+    "saveAsDraft": "حفظ كمسودة"
+  },
+  "messages": {
+    "success": {
+      "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
+      "merchantProfileUpdated": "تم تحديث ملف التاجر بنجاح",
+      "locationUpdated": "تم تحديث الموقع بنجاح",
+      "photoUpdated": "تم تحديث الصورة الشخصية بنجاح",
+      "documentsUploaded": "تم رفع المستندات بنجاح",
+      "verificationSubmitted": "تم تقديم طلب التحقق بنجاح"
+    },
+    "errors": {
+      "updateFailed": "فشل تحديث الملف الشخصي",
+      "merchantUpdateFailed": "فشل تحديث ملف التاجر",
+      "locationUpdateFailed": "فشل تحديث الموقع",
+      "photoUpdateFailed": "فشل تحديث الصورة الشخصية",
+      "invalidData": "يرجى التحقق من المعلومات المدخلة",
+      "documentUploadFailed": "فشل رفع المستندات",
+      "verificationFailed": "فشل تقديم طلب التحقق"
+    },
+    "confirmations": {
+      "unsavedChanges": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد المغادرة؟",
+      "removePhoto": "هل أنت متأكد أنك تريد إزالة صورتك الشخصية؟",
+      "deleteAccount": "هل أنت متأكد أنك تريد حذف حسابك؟"
+    }
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "minLength": "يجب أن يكون على الأقل {{min}} حرفاً",
+    "maxLength": "يجب أن يكون على الأكثر {{max}} حرفاً",
+    "invalidPhone": "يرجى إدخال رقم هاتف مصري صحيح",
+    "invalidEmail": "يرجى إدخال بريد إلكتروني صحيح",
+    "invalidRegistration": "يرجى إدخال رقم سجل تجاري مصري صحيح",
+    "invalidTaxNumber": "يرجى إدخال رقم ضريبي مصري صحيح",
+    "invalidLocation": "يرجى تحديد موقع صحيح في مصر",
+    "invalidDocument": "يرجى رفع مستند صالح بصيغة PDF أو JPG"
+  },
+  "businessTypes": {
+    "retail": "تجارة تجزئة",
+    "wholesale": "تجارة جملة",
+    "service": "خدمات",
+    "manufacturing": "تصنيع",
+    "food": "مطاعم وأغذية",
+    "electronics": "إلكترونيات",
+    "clothing": "ملابس وأزياء",
+    "furniture": "أثاث ومفروشات",
+    "other": "أخرى"
+  },
+  "stats": {
+    "listings": "المنتجات النشطة",
+    "sales": "إجمالي المبيعات",
+    "rating": "تقييم البائع",
+    "joinedDate": "عضو منذ",
+    "completedOrders": "الطلبات المكتملة",
+    "responseRate": "معدل الاستجابة",
+    "verificationLevel": "مستوى التحقق"
+  }
+}
