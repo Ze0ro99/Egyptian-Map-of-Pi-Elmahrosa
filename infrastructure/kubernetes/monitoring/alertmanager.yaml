@@ -1,0 +1,174 @@
+# Alertmanager v0.25.0 Configuration for Egyptian Map of Pi
+# Implements high availability alert management with clustering and persistence
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: monitoring
+  labels:
+    app: alertmanager
+    part-of: egyptian-map-pi
+data:
+  alertmanager.yml: |
+    global:
+      resolve_timeout: 5m
+      slack_api_url: ${SLACK_API_URL}
+      smtp_smarthost: 'smtp.egyptian-map-pi.pi:587'
+      smtp_from: 'alertmanager@egyptian-map-pi.pi'
+      smtp_auth_username: '${SMTP_USER}'
+      smtp_auth_password: '${SMTP_PASSWORD}'
+
+    route:
+      # Group alerts by name, cluster, and service
+      group_by: ['alertname', 'cluster', 'service']
+      # Wait 30s to aggregate similar alerts
+      group_wait: 30s
+      # Wait 5m before sending a new group of alerts
+      group_interval: 5m
+      # Default 4h repeat interval
+      repeat_interval: 4h
+      # Default receiver
+      receiver: 'default-receiver'
+      
+      # Specialized routes based on severity
+      routes:
+      - match:
+          severity: critical
+        receiver: critical-alerts
+        repeat_interval: 1h
+      - match:
+          severity: warning
+        receiver: warning-alerts
+        repeat_interval: 2h
+
+    receivers:
+    - name: 'default-receiver'
+      slack_configs:
+      - channel: '#egyptian-map-pi-alerts'
+        title: '{{ .GroupLabels.alertname }}'
+        text: |-
+          {{ .CommonAnnotations.description }}
+          *Severity:* {{ .CommonLabels.severity }}
+          *Environment:* {{ .CommonLabels.environment }}
+          *Service:* {{ .CommonLabels.service }}
+
+    - name: 'critical-alerts'
+      slack_configs:
+      - channel: '#egyptian-map-pi-critical'
+        title: '[CRITICAL] {{ .GroupLabels.alertname }}'
+        text: |-
+          *Alert:* {{ .GroupLabels.alertname }}
+          *Description:* {{ .CommonAnnotations.description }}
+          *Severity:* {{ .CommonLabels.severity }}
+          *Service:* {{ .CommonLabels.service }}
+          *Environment:* {{ .CommonLabels.environment }}
+        send_resolved: true
+      email_configs:
+      - to: 'oncall@egyptian-map-pi.pi'
+        send_resolved: true
+        html: '{{ template "email.default.html" . }}'
+
+    - name: 'warning-alerts'
+      slack_configs:
+      - channel: '#egyptian-map-pi-warnings'
+        title: '[WARNING] {{ .GroupLabels.alertname }}'
+        text: |-
+          *Alert:* {{ .GroupLabels.alertname }}
+          *Description:* {{ .CommonAnnotations.description }}
+          *Service:* {{ .CommonLabels.service }}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: alertmanager
+  namespace: monitoring
+  labels:
+    app: alertmanager
+    part-of: egyptian-map-pi
+spec:
+  serviceName: alertmanager
+  replicas: 3
+  selector:
+    matchLabels:
+      app: alertmanager
+  template:
+    metadata:
+      labels:
+        app: alertmanager
+    spec:
+      containers:
+      - name: alertmanager
+        image: quay.io/prometheus/alertmanager:v0.25.0
+        args:
+          - "--config.file=/etc/alertmanager/alertmanager.yml"
+          - "--storage.path=/alertmanager"
+          - "--cluster.listen-address=0.0.0.0:9094"
+          - "--cluster.peer=alertmanager-0.alertmanager:9094"
+          - "--cluster.peer=alertmanager-1.alertmanager:9094"
+          - "--cluster.peer=alertmanager-2.alertmanager:9094"
+        ports:
+        - name: web
+          containerPort: 9093
+        - name: mesh
+          containerPort: 9094
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/alertmanager
+        - name: storage-volume
+          mountPath: /alertmanager
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: 9093
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: 9093
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 200m
+            memory: 512Mi
+      volumes:
+      - name: config-volume
+        configMap:
+          name: alertmanager-config
+  volumeClaimTemplates:
+  - metadata:
+      name: storage-volume
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: standard
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager
+  namespace: monitoring
+  labels:
+    app: alertmanager
+    part-of: egyptian-map-pi
+spec:
+  type: ClusterIP
+  ports:
+  - name: web
+    port: 9093
+    targetPort: web
+  - name: mesh
+    port: 9094
+    targetPort: mesh
+  selector:
+    app: alertmanager
