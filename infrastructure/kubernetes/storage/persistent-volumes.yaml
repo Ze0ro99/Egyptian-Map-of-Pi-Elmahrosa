@@ -1,0 +1,77 @@
+# Kubernetes manifest for storage configuration
+# Version: Kubernetes 1.27+
+# AWS EBS CSI Driver: 1.5+
+
+# StorageClass for optimized EBS GP3 volumes with encryption and performance settings
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ebs-gp3
+  annotations:
+    # Set as default storage class for the cluster
+    storageclass.kubernetes.io/is-default-class: "true"
+  labels:
+    app.kubernetes.io/name: egyptian-map-of-pi
+    app.kubernetes.io/component: storage
+    app.kubernetes.io/part-of: infrastructure
+spec:
+  # Use AWS EBS CSI driver for dynamic provisioning
+  provisioner: ebs.csi.aws.com
+  # GP3 volume configuration parameters
+  parameters:
+    type: gp3
+    # Enable encryption by default for data security
+    encrypted: "true"
+    # Use ext4 filesystem for optimal performance
+    fsType: ext4
+    # Configure baseline performance
+    iops: "3000"
+    throughput: "125"
+    # Use AWS KMS for encryption key management
+    kmsKeyId: "auto"
+  # Keep volumes after PVC deletion for data safety
+  reclaimPolicy: Retain
+  # Wait for pod scheduling before volume provisioning
+  volumeBindingMode: WaitForFirstConsumer
+  # Allow volume expansion for future scaling
+  allowVolumeExpansion: true
+  # Restrict volume provisioning to specific AZs
+  allowedTopologies:
+    - matchLabelExpressions:
+        - key: topology.kubernetes.io/zone
+          values:
+            - me-south-1a
+            - me-south-1b
+            - me-south-1c
+  # Volume mount options for performance and reliability
+  mountOptions:
+    - noatime
+    - nodiratime
+    - nobarrier
+
+---
+# Default storage quota to prevent resource exhaustion
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: storage-quota
+  namespace: egyptian-map-of-pi
+spec:
+  hard:
+    # Limit total storage capacity
+    requests.storage: 1000Gi
+    # Limit number of PVCs
+    persistentvolumeclaims: "20"
+    # Limit GP3 storage specifically
+    ebs-gp3.storageclass.storage.k8s.io/requests.storage: 800Gi
+
+---
+# PriorityClass for storage operations
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: storage-critical
+spec:
+  value: 1000000
+  globalDefault: false
+  description: "Critical priority class for storage operations"
