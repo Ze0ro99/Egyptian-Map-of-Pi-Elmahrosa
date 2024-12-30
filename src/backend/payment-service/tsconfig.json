@@ -1,0 +1,64 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    // Root directories and output configuration
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "baseUrl": "./src",
+
+    // Strict type checking for payment processing security
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    // Path aliases for payment service modules
+    "paths": {
+      "@interfaces/*": ["interfaces/*"],
+      "@config/*": ["config/*"],
+      "@models/*": ["models/*"],
+      "@services/*": ["services/*"],
+      "@controllers/*": ["controllers/*"],
+      "@utils/*": ["utils/*"],
+      "@shared/*": ["../../shared/*"]
+    },
+
+    // Types and module resolution
+    "types": ["node", "jest"],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "declaration": true
+  },
+
+  // Project references
+  "references": [
+    {
+      "path": "../shared"
+    }
+  ],
+
+  // Source files
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+
+  // ts-node configuration for development
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true
+  }
+}
