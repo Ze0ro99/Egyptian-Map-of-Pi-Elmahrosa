@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0",
+  "npmClient": "npm",
+  "useWorkspaces": true,
+  "packages": [
+    "api-gateway",
+    "auth-service", 
+    "location-service",
+    "marketplace-service",
+    "messaging-service",
+    "payment-service",
+    "shared"
+  ],
+  "command": {
+    "bootstrap": {
+      "hoist": true,
+      "npmClientArgs": [
+        "--no-package-lock"
+      ]
+    },
+    "publish": {
+      "conventionalCommits": true,
+      "message": "chore(release): publish %s",
+      "registry": "https://registry.npmjs.org/"
+    },
+    "version": {
+      "conventionalCommits": true,
+      "message": "chore(release): version %s",
+      "changelogPreset": "angular"
+    }
+  }
+}
