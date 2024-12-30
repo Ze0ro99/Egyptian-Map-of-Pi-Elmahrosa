@@ -1,0 +1,198 @@
+{
+  "title": {
+    "profile": "Profile",
+    "editProfile": "Edit Profile",
+    "merchantProfile": "Merchant Profile",
+    "editMerchantProfile": "Edit Merchant Profile",
+    "settings": "Profile Settings",
+    "verification": "Profile Verification",
+    "kyc": "Identity Verification"
+  },
+  "sections": {
+    "personalInfo": "Personal Information",
+    "merchantInfo": "Merchant Information",
+    "contactInfo": "Contact Information",
+    "locationInfo": "Location Information",
+    "preferences": "Preferences",
+    "security": "Security Settings",
+    "verification": "Verification Status",
+    "documents": "Required Documents"
+  },
+  "fields": {
+    "name": {
+      "label": "Full Name",
+      "placeholder": "Enter your full name",
+      "error": "Full name is required",
+      "arabicName": {
+        "label": "Name in Arabic",
+        "placeholder": "Enter your name in Arabic",
+        "error": "Arabic name is required for Egyptian merchants"
+      }
+    },
+    "phone": {
+      "label": "Phone Number",
+      "placeholder": "Enter your Egyptian phone number (e.g., 01xxxxxxxxx)",
+      "error": "Valid Egyptian phone number is required",
+      "verification": "Verify via SMS"
+    },
+    "email": {
+      "label": "Email Address",
+      "placeholder": "Enter your email address",
+      "error": "Valid email address is required",
+      "verification": "Verify Email"
+    },
+    "businessName": {
+      "label": "Business Name",
+      "placeholder": "Enter your registered business name",
+      "error": "Business name is required",
+      "arabicName": {
+        "label": "Business Name in Arabic",
+        "placeholder": "Enter your business name in Arabic",
+        "error": "Arabic business name is required"
+      }
+    },
+    "businessType": {
+      "label": "Business Type",
+      "placeholder": "Select your business type",
+      "error": "Business type is required",
+      "subtype": {
+        "label": "Business Subtype",
+        "placeholder": "Select your business subtype"
+      }
+    },
+    "registrationNumber": {
+      "label": "Egyptian Commercial Registration Number",
+      "placeholder": "Enter your 10-digit registration number",
+      "error": "Valid Egyptian registration number is required",
+      "help": "Found on your commercial registration certificate"
+    },
+    "taxNumber": {
+      "label": "Tax Registration Number",
+      "placeholder": "Enter your Egyptian tax number",
+      "error": "Valid tax number is required"
+    },
+    "location": {
+      "label": "Business Location",
+      "placeholder": "Select your business location",
+      "error": "Business location is required",
+      "governorate": {
+        "label": "Governorate",
+        "placeholder": "Select governorate"
+      },
+      "city": {
+        "label": "City",
+        "placeholder": "Select city"
+      },
+      "district": {
+        "label": "District",
+        "placeholder": "Select district"
+      },
+      "street": {
+        "label": "Street Address",
+        "placeholder": "Enter detailed street address"
+      }
+    }
+  },
+  "buttons": {
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "becomeMerchant": "Become a Merchant",
+    "uploadPhoto": "Upload Photo",
+    "removePhoto": "Remove Photo",
+    "updateLocation": "Update Location",
+    "verify": "Verify Now",
+    "resend": "Resend Code",
+    "submit": "Submit for Review",
+    "edit": "Edit Information",
+    "delete": "Delete Account",
+    "uploadDocument": "Upload Document",
+    "viewDocument": "View Document"
+  },
+  "messages": {
+    "success": {
+      "profileUpdated": "Profile updated successfully",
+      "merchantProfileUpdated": "Merchant profile updated successfully",
+      "locationUpdated": "Location updated successfully",
+      "photoUpdated": "Profile photo updated successfully",
+      "verificationSubmitted": "Verification documents submitted successfully",
+      "emailVerified": "Email address verified successfully",
+      "phoneVerified": "Phone number verified successfully"
+    },
+    "errors": {
+      "updateFailed": "Profile update failed. Please try again.",
+      "merchantUpdateFailed": "Merchant profile update failed. Please verify your information.",
+      "locationUpdateFailed": "Location update failed. Please check your connection.",
+      "photoUpdateFailed": "Profile photo update failed. Please try again.",
+      "verificationFailed": "Verification failed. Please check your documents.",
+      "invalidData": "Please check your input data",
+      "networkError": "Network connection error. Please try again.",
+      "serverError": "Server error. Please try again later."
+    },
+    "confirmations": {
+      "unsavedChanges": "You have unsaved changes. Are you sure you want to leave?",
+      "removePhoto": "Are you sure you want to remove your profile photo?",
+      "deleteAccount": "Are you sure you want to delete your account? This action cannot be undone.",
+      "submitVerification": "Are you ready to submit your verification documents?"
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "minLength": "Must be at least {{min}} characters",
+    "maxLength": "Must be at most {{max}} characters",
+    "invalidPhone": "Please enter a valid Egyptian phone number starting with 01",
+    "invalidEmail": "Please enter a valid email address",
+    "invalidRegistration": "Please enter a valid 10-digit Egyptian commercial registration number",
+    "invalidTax": "Please enter a valid Egyptian tax registration number",
+    "passwordStrength": "Password must contain at least 8 characters, including numbers and symbols",
+    "matchPassword": "Passwords do not match"
+  },
+  "businessTypes": {
+    "retail": "Retail",
+    "wholesale": "Wholesale",
+    "service": "Services",
+    "manufacturing": "Manufacturing",
+    "restaurant": "Restaurant",
+    "cafe": "Café",
+    "grocery": "Grocery",
+    "electronics": "Electronics",
+    "clothing": "Clothing",
+    "furniture": "Furniture",
+    "automotive": "Automotive",
+    "healthcare": "Healthcare",
+    "education": "Education",
+    "other": "Other"
+  },
+  "stats": {
+    "listings": "Active Listings",
+    "sales": "Total Sales",
+    "rating": "Seller Rating",
+    "joinedDate": "Member Since",
+    "completedOrders": "Completed Orders",
+    "responseRate": "Response Rate",
+    "averageRating": "Average Rating",
+    "totalRevenue": "Total Revenue (Pi)",
+    "monthlyStats": "Monthly Performance",
+    "verificationLevel": "Verification Level"
+  },
+  "verification": {
+    "status": {
+      "pending": "Verification Pending",
+      "inReview": "Under Review",
+      "verified": "Verified",
+      "rejected": "Verification Rejected"
+    },
+    "documents": {
+      "id": "National ID",
+      "commercialRegister": "Commercial Registration",
+      "taxCard": "Tax Registration Card",
+      "utilityBill": "Recent Utility Bill",
+      "bankStatement": "Bank Statement"
+    },
+    "steps": {
+      "personal": "Personal Information",
+      "business": "Business Details",
+      "documents": "Document Upload",
+      "review": "Final Review"
+    }
+  }
+}
