@@ -1,0 +1,163 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.pnp
+.pnp.js
+bower_components/
+jspm_packages/
+vendor/
+
+# Environment & Secrets
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*
+*.pem
+*_rsa
+*_ecdsa
+*.key
+pi_credentials.json
+egyptian_compliance.key
+
+# Build Output
+dist/
+build/
+.next/
+out/
+.nuxt/
+coverage/
+public/uploads/
+dist-ssr/
+*.local
+
+# IDE & Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.sublime-*
+*.code-workspace
+.history/
+
+# Testing & Debug
+coverage/
+.nyc_output/
+cypress/videos/
+cypress/screenshots/
+.jest-cache/
+__snapshots__/
+test-results/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log
+crash-reports/
+
+# Cache
+.cache/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+.npm
+.parcel-cache
+.rollup.cache
+.webpack.cache
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.temp
+.temp-*
+._*
+.Spotlight-V100
+.Trashes
+
+# Docker
+*.dockerfile
+docker-compose.override.yml
+.docker/
+
+# Kubernetes
+kubeconfig
+*.kubeconfig
+kube*.yml
+
+# Project Specific
+# Mobile App
+ios/Pods/
+android/app/build/
+android/.gradle/
+*.apk
+*.aab
+*.ipa
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# CDN & Assets
+public/cdn-assets/
+public/user-uploads/
+public/temp/
+
+# Monitoring & Analytics
+newrelic.js
+datadog.yml
+prometheus.yml
+
+# Backup Files
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+
+# Compiled Translations
+src/locales/_build/
+src/translations/*.compiled.json
+
+# Generated API Documentation
+api-docs/
+swagger-ui/
+openapi.json
+
+# Security & Compliance
+security-audit.json
+compliance-report.pdf
+penetration-test/
+
+# Development Tools
+.husky/
+.lint-staged.config.js
+.prettierrc.local.js
+.eslintrc.local.js
+
+# Deployment
+.deploy/
+.serverless/
+terraform.tfstate*
+.terraform/
+*.tfvars
+
+# Certificates & Keys
+certificates/
+*.crt
+*.cert
+*.pfx
+*.p12
+
+# Local Development Overrides
+docker-compose.override.yml
+nginx.local.conf
+webpack.local.js
