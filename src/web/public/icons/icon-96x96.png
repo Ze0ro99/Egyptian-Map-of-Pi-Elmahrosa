@@ -1,0 +1,54 @@
+Image Specifications:
+- Dimensions: 96x96 pixels
+- Format: PNG with transparency (32-bit with alpha channel)
+- File size: Optimized to <5KB
+- Color scheme: 
+  - Background: #F5F5F5
+  - Theme color: #1B4D89
+  - Color space: sRGB
+  - Minimum contrast ratio: 4.5:1
+
+Design Elements:
+1. Core Shape:
+- Circular base shape (80% of total width/height)
+- Material Design 3.0 elevation and shadow guidelines
+- 40% padding for maskable icon safe zone
+
+2. Icon Elements:
+- Stylized "π" symbol in theme color #1B4D89
+- Egyptian pyramid silhouette overlay
+- Location marker integration
+- Material Design icon grid alignment
+
+3. Safe Zone Implementation:
+- Primary content within 57.6x57.6 pixel central area
+- Edge padding following maskable icon guidelines
+- Pixel-perfect alignment at target resolution
+
+4. Cultural Elements:
+- Egyptian architectural motifs
+- Modern minimalist interpretation
+- Balanced visual hierarchy
+
+Technical Implementation:
+1. Image Optimization:
+- PNG compression with alpha channel
+- Optimized for <5KB file size
+- Pixel-perfect rendering at 96x96
+
+2. Metadata:
+- Proper PNG chunks for web delivery
+- Color profile: sRGB
+- Transparency: Enabled
+
+3. Cache Headers:
+Cache-Control: public, max-age=31536000, immutable
+Content-Type: image/png
+ETag: [Generated hash]
+
+Browser Support:
+- Pi Browser (latest): Full support
+- Chrome Mobile (80+): Maskable icon support
+- Safari iOS (12+): Standard icon support
+- Firefox Mobile (95+): Full maskable support
+- Opera Mobile (60+): Standard support
