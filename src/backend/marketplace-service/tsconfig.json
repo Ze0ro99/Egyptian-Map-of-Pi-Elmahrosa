@@ -1,0 +1,79 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "rootDir": "src",
+    "outDir": "dist",
+    "baseUrl": ".",
+    "target": "es2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    
+    // Strict Type Checking
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    
+    // Additional Checks
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    
+    // Module Resolution
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    
+    // Source Maps
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    
+    // Path Aliases
+    "paths": {
+      "@shared/*": ["../shared/*"],
+      "@models/*": ["src/models/*"],
+      "@services/*": ["src/services/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@interfaces/*": ["src/interfaces/*"],
+      "@config/*": ["src/config/*"],
+      "@utils/*": ["src/utils/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@validators/*": ["src/validators/*"],
+      "@types/*": ["src/types/*"]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**",
+    "**/__mocks__/**"
+  ],
+  "references": [
+    {
+      "path": "../shared/tsconfig.json"
+    }
+  ],
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
+}
