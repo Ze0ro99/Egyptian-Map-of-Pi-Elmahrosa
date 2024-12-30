@@ -1,0 +1,146 @@
+# Kubernetes Deployment for Egyptian Map of Pi Web Frontend
+# Version: 1.0.0
+# Platform: AWS EKS 1.27+
+# Application: React 18.2 + Next.js 13 Progressive Web App
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: egyptian-map-pi
+  labels:
+    app: web
+    part-of: egyptian-map-pi
+    tier: frontend
+    environment: production
+  annotations:
+    kubernetes.io/description: "Egyptian Map of Pi frontend web application"
+    deployment.kubernetes.io/revision: "1"
+spec:
+  # High availability configuration with 3 replicas
+  replicas: 3
+  
+  # Zero-downtime rolling update strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  
+  # Pod selector matching
+  selector:
+    matchLabels:
+      app: web
+  
+  template:
+    metadata:
+      labels:
+        app: web
+        part-of: egyptian-map-pi
+        tier: frontend
+        environment: production
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+        prometheus.io/path: "/metrics"
+    
+    spec:
+      # Container specifications
+      containers:
+      - name: web
+        image: egyptian-map-pi/web:latest
+        imagePullPolicy: Always
+        
+        # Container port configuration
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        
+        # Resource allocation and limits
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        
+        # Health monitoring
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        
+        # Environment configuration
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: NEXT_TELEMETRY_DISABLED
+          value: "1"
+        - name: TZ
+          value: "Africa/Cairo"
+        
+        # Security context
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+        
+        # Volume mounts for temporary storage
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        
+      # Pod-level configurations
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      
+      # High availability pod anti-affinity rules
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - web
+              topologyKey: topology.kubernetes.io/zone
+      
+      # Pod termination grace period
+      terminationGracePeriodSeconds: 60
+      
+      # Pod security policies
+      securityContext:
+        fsGroup: 1000
+      
+      # Node selection and tolerations
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
