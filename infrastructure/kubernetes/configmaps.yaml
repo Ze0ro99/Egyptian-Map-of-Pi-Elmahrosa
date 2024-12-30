@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: List
+items:
+  # API Gateway ConfigMap
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: api-gateway-config
+      namespace: app
+      labels:
+        app: api-gateway
+        part-of: egyptian-map-pi
+        environment: production
+    data:
+      # CORS Configuration
+      cors-config:
+        allowedOrigins:
+          - https://*.pi.network
+          - https://*.egyptian-map-pi.com
+          - https://egyptian-map-pi.com
+        allowedMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        allowedHeaders:
+          - Content-Type
+          - Authorization
+          - X-Pi-Network-Token
+          - Accept-Language
+        maxAge: "86400"
+        credentials: true
+
+      # Rate Limiting Configuration
+      rate-limit-config:
+        windowMs: "900000"  # 15 minutes
+        max: "100"  # 100 requests per windowMs
+        message: "Too many requests from this IP"
+        skipSuccessfulRequests: false
+        headers: true
+
+      # Logging Configuration
+      logging-config:
+        level: info
+        format: json
+        timestamp: true
+        colorize: false
+        requestId: true
+
+      # Metrics Configuration
+      metrics-config:
+        enabled: true
+        path: /metrics
+        collectDefaultMetrics: true
+        prefix: egyptian_map_pi_
+
+  # Auth Service ConfigMap
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: auth-service-config
+      namespace: app
+      labels:
+        app: auth-service
+        part-of: egyptian-map-pi
+        environment: production
+    data:
+      # Pi Network Integration Configuration
+      pi-network-config:
+        apiEndpoint: https://api.minepi.com
+        sandboxMode: "false"
+        platformType: web
+        appVersion: "1.0.0"
+        scope:
+          - payments
+          - username
+          - wallet_address
+
+      # JWT Configuration
+      jwt-config:
+        algorithm: RS256
+        expiresIn: "24h"
+        issuer: egyptian-map-pi
+        audience: egyptian-map-pi-users
+        refreshTokenExpiry: "7d"
+
+      # KYC Configuration for Egyptian Market
+      kyc-config:
+        requiredLevel: full
+        region: EG
+        allowedDocumentTypes:
+          - national_id
+          - passport
+          - drivers_license
+        minAge: 18
+        verificationTimeout: "48h"
+        merchantRequirements:
+          businessRegistration: true
+          taxId: true
+          addressVerification: true
+
+      # Localization Configuration
+      localization-config:
+        defaultLanguage: ar
+        supportedLanguages:
+          - ar
+          - en
+        rtlLanguages:
+          - ar
+        timezone: Africa/Cairo
