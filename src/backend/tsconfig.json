@@ -1,0 +1,81 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "lib": ["ES2022"],
+    
+    // Type checking and declaration generation
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "composite": true,
+    "incremental": true,
+    "strict": true,
+    
+    // Module resolution
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    
+    // Decorator support
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    
+    // Path aliases for microservices
+    "paths": {
+      "@shared/*": ["./shared/*"],
+      "@api-gateway/*": ["./api-gateway/src/*"],
+      "@auth/*": ["./auth-service/src/*"],
+      "@marketplace/*": ["./marketplace-service/src/*"],
+      "@payment/*": ["./payment-service/src/*"],
+      "@location/*": ["./location-service/src/*"],
+      "@messaging/*": ["./messaging-service/src/*"]
+    },
+    
+    // Output configuration
+    "rootDir": ".",
+    "outDir": "./dist",
+    "baseUrl": "."
+  },
+  
+  // Project references for microservices
+  "references": [
+    { "path": "./api-gateway" },
+    { "path": "./auth-service" },
+    { "path": "./marketplace-service" },
+    { "path": "./payment-service" },
+    { "path": "./location-service" },
+    { "path": "./messaging-service" }
+  ],
+  
+  // Source files to include/exclude
+  "include": [
+    "api-gateway/src/**/*.ts",
+    "auth-service/src/**/*.ts",
+    "marketplace-service/src/**/*.ts",
+    "payment-service/src/**/*.ts",
+    "location-service/src/**/*.ts",
+    "messaging-service/src/**/*.ts",
+    "shared/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**",
+    "**/__mocks__/**"
+  ],
+  
+  // ts-node configuration for development
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true,
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  }
+}
