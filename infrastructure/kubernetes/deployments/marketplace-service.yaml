@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marketplace-service
+  namespace: app
+  labels:
+    app: marketplace-service
+    part-of: egyptian-map-pi
+    version: 1.0.0
+    environment: production
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3002"
+    prometheus.io/path: "/metrics"
+spec:
+  # High availability with 3 replicas across zones
+  replicas: 3
+  # Zero-downtime rolling updates
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: marketplace-service
+  template:
+    metadata:
+      labels:
+        app: marketplace-service
+        version: 1.0.0
+        environment: production
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3002"
+        prometheus.io/path: "/metrics"
+    spec:
+      # Pod anti-affinity to spread across nodes
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - marketplace-service
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: marketplace-service
+        image: egyptian-map-pi/marketplace-service:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3002
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3002"
+        - name: CONFIG_PATH
+          value: "/etc/config/marketplace-service"
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: marketplace-service-secrets
+              key: mongodb-uri
+        # Resource limits and requests for optimal performance
+        resources:
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+        # Health checking
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3002
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+        # Volume mounts for config and temp data
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+        - name: tmp-volume
+          mountPath: /tmp
+        # Security context for container hardening
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+      # Volume definitions
+      volumes:
+      - name: config-volume
+        configMap:
+          name: marketplace-service-config
+      - name: tmp-volume
+        emptyDir: {}
+      # Pull secrets for private registry
+      imagePullSecrets:
+      - name: registry-credentials
