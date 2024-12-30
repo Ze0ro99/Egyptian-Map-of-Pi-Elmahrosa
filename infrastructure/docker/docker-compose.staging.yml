@@ -1,0 +1,202 @@
+version: '3.9'
+
+services:
+  api-gateway:
+    image: egyptian-map-pi/api-gateway:staging
+    build:
+      context: ../../src/backend/api-gateway
+      dockerfile: Dockerfile
+      target: staging
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=staging
+      - PORT=3000
+      - LOG_LEVEL=debug
+      - ENABLE_SWAGGER=true
+      - API_TIMEOUT=30000
+      - MAX_REQUEST_SIZE=5mb
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      - auth-service
+      - marketplace-service
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    networks:
+      - egyptian-map-pi-staging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  auth-service:
+    image: egyptian-map-pi/auth-service:staging
+    build:
+      context: ../../src/backend/auth-service
+      dockerfile: Dockerfile
+      target: staging
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=staging
+      - PORT=3001
+      - LOG_LEVEL=debug
+      - JWT_SECRET=${JWT_SECRET}
+      - MONGO_URI=mongodb://admin:staging_password@mongodb:27017/egyptian_map_pi_staging
+      - REDIS_URL=redis://redis:6379/0
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      - mongodb
+      - redis
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    networks:
+      - egyptian-map-pi-staging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  marketplace-service:
+    image: egyptian-map-pi/marketplace-service:staging
+    build:
+      context: ../../src/backend/marketplace-service
+      dockerfile: Dockerfile
+      target: staging
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=staging
+      - PORT=3003
+      - LOG_LEVEL=debug
+      - ENABLE_METRICS=true
+      - MONGO_URI=mongodb://admin:staging_password@mongodb:27017/egyptian_map_pi_staging
+      - REDIS_URL=redis://redis:6379/1
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      - mongodb
+      - redis
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    networks:
+      - egyptian-map-pi-staging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=staging_password
+      - MONGO_INITDB_DATABASE=egyptian_map_pi_staging
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+    networks:
+      - egyptian-map-pi-staging
+    command: ["mongod", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.5"]
+
+  redis:
+    image: redis:7.0-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+    networks:
+      - egyptian-map-pi-staging
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+
+volumes:
+  mongodb_data:
+    name: emp-staging-mongodb-data
+  mongodb_config:
+    name: emp-staging-mongodb-config
+  redis_data:
+    name: emp-staging-redis-data
+
+networks:
+  egyptian-map-pi-staging:
+    driver: bridge
+    name: emp-staging
+    driver_opts:
+      com.docker.network.bridge.name: emp-staging
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+    labels:
+      environment: staging
+      project: egyptian-map-pi
