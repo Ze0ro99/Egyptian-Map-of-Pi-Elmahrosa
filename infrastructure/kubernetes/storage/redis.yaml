@@ -1,0 +1,182 @@
+# Redis Cluster Configuration for Egyptian Map of Pi
+# Version: Redis 7.0-alpine
+# Kubernetes: 1.27+
+# Dependencies: ebs-gp3 StorageClass
+
+---
+# Redis ConfigMap for cluster configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: app
+  labels:
+    app: redis
+    part-of: egyptian-map-pi
+    tier: cache
+data:
+  redis.conf: |
+    # Redis configuration optimized for caching and message broker
+    maxmemory 400mb
+    maxmemory-policy allkeys-lru
+    appendonly yes
+    appendfsync everysec
+    save 900 1
+    save 300 10
+    save 60 10000
+    tcp-keepalive 300
+    timeout 0
+    # Security settings
+    protected-mode yes
+    rename-command FLUSHALL ""
+    rename-command FLUSHDB ""
+    # Performance tuning
+    activerehashing yes
+    no-appendfsync-on-rewrite yes
+    
+---
+# Redis StatefulSet for high availability deployment
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: app
+  labels:
+    app: redis
+    part-of: egyptian-map-pi
+    tier: cache
+    environment: production
+spec:
+  serviceName: redis
+  replicas: 3
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        tier: cache
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9121"
+    spec:
+      terminationGracePeriodSeconds: 30
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - redis
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: redis
+        image: redis:7.0-alpine
+        imagePullPolicy: IfNotPresent
+        command:
+        - redis-server
+        - /etc/redis/redis.conf
+        ports:
+        - name: redis
+          containerPort: 6379
+          protocol: TCP
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          tcpSocket:
+            port: redis
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: redis-config
+          mountPath: /etc/redis
+        - name: redis-data
+          mountPath: /data
+      - name: redis-exporter
+        image: oliver006/redis_exporter:v1.44.0
+        ports:
+        - name: metrics
+          containerPort: 9121
+          protocol: TCP
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "100m"
+            memory: "128Mi"
+      volumes:
+      - name: redis-config
+        configMap:
+          name: redis-config
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: ebs-gp3
+      resources:
+        requests:
+          storage: 10Gi
+
+---
+# Headless service for StatefulSet DNS-based discovery
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: app
+  labels:
+    app: redis
+    tier: cache
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: redis
+  - name: metrics
+    port: 9121
+    targetPort: metrics
+  clusterIP: None
+  selector:
+    app: redis
+
+---
+# Redis metrics Service for Prometheus scraping
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-metrics
+  namespace: app
+  labels:
+    app: redis
+    tier: cache
+spec:
+  ports:
+  - name: metrics
+    port: 9121
+    targetPort: metrics
+  selector:
+    app: redis
