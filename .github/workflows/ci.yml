@@ -1,0 +1,209 @@
+name: CI
+
+# Trigger on push to main/develop branches and PRs
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '*.json'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '*.json'
+
+# Environment variables
+env:
+  NODE_ENV: test
+  CI: true
+  COVERAGE_THRESHOLD: 80
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  PI_NETWORK_KEY: ${{ secrets.PI_NETWORK_KEY }}
+
+jobs:
+  # Code quality checks
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd src/web && npm ci
+          cd ../backend && npm ci
+
+      - name: Run ESLint
+        run: |
+          cd src/web && npm run lint
+          cd ../backend && npm run lint
+
+      - name: Run Prettier check
+        run: |
+          cd src/web && npx prettier --check "**/*.{ts,tsx,js,jsx,json}"
+          cd ../backend && npm run format
+
+      - name: Validate i18n files
+        run: |
+          cd src/web && node scripts/validate-i18n.js
+
+  # Backend service tests
+  test-backend:
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      matrix:
+        service: [api-gateway, auth-service, location-service, marketplace-service, messaging-service, payment-service]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd src/backend
+          npm ci
+          cd ${{ matrix.service }}
+          npm ci
+
+      - name: Run unit tests
+        run: |
+          cd src/backend/${{ matrix.service }}
+          npm run test:coverage
+        env:
+          COVERAGE_THRESHOLD: ${{ env.COVERAGE_THRESHOLD }}
+
+      - name: Run integration tests
+        run: |
+          cd src/backend/${{ matrix.service }}
+          npm run test:integration
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-backend-${{ matrix.service }}
+          path: src/backend/${{ matrix.service }}/coverage
+
+  # Frontend tests
+  test-frontend:
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd src/web
+          npm ci
+
+      - name: Run unit tests
+        run: |
+          cd src/web
+          npm run test:coverage
+        env:
+          COVERAGE_THRESHOLD: ${{ env.COVERAGE_THRESHOLD }}
+
+      - name: Test RTL/LTR layouts
+        run: |
+          cd src/web
+          npm run test:rtl
+
+      - name: Test PWA functionality
+        run: |
+          cd src/web
+          npm run test:pwa
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-frontend
+          path: src/web/coverage
+
+  # Security scanning
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript, typescript
+
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+      - name: Run dependency scanning
+        run: |
+          cd src/web && npm audit
+          cd ../backend && npm audit
+
+      - name: Check for vulnerabilities
+        run: |
+          cd src/web && npm run security-audit
+          cd ../backend && npm run security:audit
+
+      - name: Generate security report
+        run: |
+          echo "Security Scan Results" > security-report.md
+          echo "===================" >> security-report.md
+          echo "CodeQL Analysis, Dependency Scanning, and Security Audit results" >> security-report.md
+
+      - name: Upload security report
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-report
+          path: security-report.md
+
+  # Deployment approval
+  deploy-approval:
+    runs-on: ubuntu-latest
+    needs: security-scan
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    environment: 
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
+    steps:
+      - name: Deployment approval
+        run: |
+          echo "All checks passed - Ready for deployment to ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}"
