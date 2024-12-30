@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: messaging-service
+  namespace: app
+  labels:
+    app: messaging-service
+    part-of: egyptian-map-pi
+    version: 1.0.0
+    tier: backend
+    environment: production
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3004'
+    prometheus.io/path: '/metrics'
+    deployment.kubernetes.io/revision: '1'
+    kubernetes.io/description: 'Real-time messaging service for Egyptian Map of Pi platform'
+spec:
+  # High availability with 5 replicas
+  replicas: 5
+  # Rolling update strategy for zero-downtime deployments
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: messaging-service
+  template:
+    metadata:
+      labels:
+        app: messaging-service
+        version: 1.0.0
+        tier: backend
+        part-of: egyptian-map-pi
+      annotations:
+        checksum/config: ${CONFIG_CHECKSUM}
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3004'
+    spec:
+      # Security context for the pod
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+      containers:
+        - name: messaging-service
+          image: egyptian-map-pi/messaging-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3004
+              name: http
+              protocol: TCP
+            - containerPort: 3005
+              name: websocket
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: 'production'
+            - name: PORT
+              value: '3004'
+            - name: WEBSOCKET_PORT
+              value: '3005'
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: socket-config
+                  key: redis-host
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: messaging-service-secrets
+                  key: redis-password
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: logging-config
+                  key: level
+            - name: METRICS_ENABLED
+              value: 'true'
+          resources:
+            requests:
+              cpu: '200m'
+              memory: '256Mi'
+            limits:
+              cpu: '500m'
+              memory: '512Mi'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+          volumeMounts:
+            - name: socket-config
+              mountPath: /app/config/socket
+              readOnly: true
+            - name: logging-config
+              mountPath: /app/config/logging
+              readOnly: true
+      # Pod anti-affinity for high availability
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - messaging-service
+                topologyKey: topology.kubernetes.io/zone
+      volumes:
+        - name: socket-config
+          configMap:
+            name: socket-config
+        - name: logging-config
+          configMap:
+            name: logging-config
+      # Node affinity for performance optimization
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 80
+            preference:
+              matchExpressions:
+                - key: node-type
+                  operator: In
+                  values:
+                    - compute-optimized
+      # Topology spread constraints for better distribution
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfied: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: messaging-service
+      terminationGracePeriodSeconds: 60
