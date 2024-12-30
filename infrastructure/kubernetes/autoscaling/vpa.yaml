@@ -1,0 +1,71 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: api-gateway-vpa
+  namespace: app
+  annotations:
+    # Enable VPA monitoring integration
+    vpa.monitoring/enabled: "true"
+    # Indicate HPA coordination
+    vpa.coordination/hpa-managed: "true"
+    # Additional metadata for monitoring
+    vpa.metrics/update-interval: "1m"
+    vpa.policy/mode: "Auto"
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-gateway
+  updatePolicy:
+    updateMode: "Auto"
+  resourcePolicy:
+    containerPolicies:
+    - containerName: api-gateway
+      # Set minimum resource bounds based on baseline usage
+      minAllowed:
+        cpu: "100m"
+        memory: "256Mi"
+      # Set maximum resource bounds based on peak load estimates
+      maxAllowed:
+        cpu: "1000m"
+        memory: "1Gi"
+      # Specify resources to be controlled
+      controlledResources: ["cpu", "memory"]
+      # Control scaling behavior
+      controlledValues: "RequestsAndLimits"
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: marketplace-service-vpa
+  namespace: app
+  annotations:
+    # Enable VPA monitoring integration
+    vpa.monitoring/enabled: "true"
+    # Indicate HPA coordination
+    vpa.coordination/hpa-managed: "true"
+    # Additional metadata for monitoring
+    vpa.metrics/update-interval: "1m"
+    vpa.policy/mode: "Auto"
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: marketplace-service
+  updatePolicy:
+    updateMode: "Auto"
+  resourcePolicy:
+    containerPolicies:
+    - containerName: marketplace-service
+      # Set minimum resource bounds based on service requirements
+      minAllowed:
+        cpu: "500m"
+        memory: "512Mi"
+      # Set maximum resource bounds based on service scalability
+      maxAllowed:
+        cpu: "2000m"
+        memory: "2Gi"
+      # Specify resources to be controlled
+      controlledResources: ["cpu", "memory"]
+      # Control scaling behavior
+      controlledValues: "RequestsAndLimits"
