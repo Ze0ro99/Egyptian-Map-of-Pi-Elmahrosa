@@ -1,0 +1,96 @@
+# Dependabot configuration v2 for Egyptian Map of Pi
+# Manages automated dependency updates for backend, frontend and GitHub Actions
+version: 2
+updates:
+  # Backend Node.js dependencies
+  - package-ecosystem: "npm"
+    directory: "/src/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Africa/Cairo"
+    labels:
+      - "dependencies"
+      - "backend"
+    assignees:
+      - "egyptian-map-pi-team"
+    reviewers:
+      - "egyptian-map-pi-team"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      typescript-eslint:
+        patterns:
+          - "@typescript-eslint/*"
+      jest:
+        patterns:
+          - "jest"
+          - "@types/jest"
+          - "ts-jest"
+      node-core:
+        patterns:
+          - "express"
+          - "mongoose"
+          - "redis"
+    ignore:
+      - dependency-name: "node"
+        versions: [">=19.0.0"]
+    security-updates-only: false
+    open-pull-requests-limit: 10
+
+  # Frontend React dependencies
+  - package-ecosystem: "npm"
+    directory: "/src/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Africa/Cairo"
+    labels:
+      - "dependencies"
+      - "frontend"
+    assignees:
+      - "egyptian-map-pi-team"
+    reviewers:
+      - "egyptian-map-pi-team"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react*"
+      mui:
+        patterns:
+          - "@mui/*"
+      testing:
+        patterns:
+          - "@testing-library/*"
+          - "jest"
+          - "@types/jest"
+    ignore:
+      - dependency-name: "node"
+        versions: [">=19.0.0"]
+    security-updates-only: false
+    open-pull-requests-limit: 10
+
+  # GitHub Actions workflow dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      timezone: "Africa/Cairo"
+    labels:
+      - "dependencies"
+      - "ci-cd"
+    assignees:
+      - "egyptian-map-pi-team"
+    reviewers:
+      - "egyptian-map-pi-team"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+    security-updates-only: false
+    open-pull-requests-limit: 5
