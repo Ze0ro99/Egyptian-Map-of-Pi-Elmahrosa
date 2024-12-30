@@ -1,0 +1,190 @@
+// @version: 1.0.0
+// Configuration file for the listing form in the Egyptian Map of Pi marketplace
+
+import { ListingFormConfig } from './types';
+
+/**
+ * Configuration object for the listing creation/editing form
+ * Includes form labels, validation rules, messages, and filter options
+ */
+const listingFormConfig: ListingFormConfig = {
+  form: {
+    title: "Create New Listing",
+    edit_title: "Edit Listing",
+    labels: {
+      title: "Title (English)",
+      description: "Description (English)",
+      category: "Category",
+      price: "Price (Pi)",
+      price_egp: "Approximate Price (EGP)",
+      location: "Location in Egypt",
+      images: "Product Images",
+      delivery_options: "Delivery Options",
+      seller_info: "Seller Information"
+    },
+    placeholders: {
+      title: "Enter title in English (3-100 characters)",
+      description: "Enter detailed description in English (10-1000 characters)",
+      price: "Enter price in Pi (e.g., 100 π)",
+      location: "Select your location in Egypt",
+      search_location: "Search for your location"
+    },
+    buttons: {
+      submit: "Submit Listing",
+      update: "Update Listing",
+      cancel: "Cancel",
+      upload_images: "Upload Images (Max 5)",
+      select_location: "Select Location",
+      preview: "Preview Listing",
+      save_draft: "Save as Draft"
+    }
+  },
+
+  categories: {
+    FASHION_TRADITIONAL: "Traditional Egyptian Fashion",
+    FASHION_MODERN: "Modern Fashion",
+    ELECTRONICS: "Electronics & Gadgets",
+    FOOD_LOCAL: "Local Egyptian Food",
+    FOOD_RESTAURANT: "Restaurant Services",
+    SERVICES_PROFESSIONAL: "Professional Services",
+    SERVICES_CRAFTS: "Traditional Crafts",
+    HANDMADE: "Handmade Items",
+    ANTIQUES: "Egyptian Antiques",
+    OTHER: "Other Categories"
+  },
+
+  statuses: {
+    DRAFT: "Draft",
+    PENDING_REVIEW: "Pending Review",
+    ACTIVE: "Active",
+    SOLD: "Sold",
+    INACTIVE: "Inactive",
+    REJECTED: "Rejected"
+  },
+
+  validation: {
+    title: {
+      required: "Title in English is required",
+      min: "Title must be at least 3 characters",
+      max: "Title cannot exceed 100 characters",
+      format: "Title must contain only English characters"
+    },
+    description: {
+      required: "Description in English is required",
+      min: "Description must be at least 10 characters",
+      max: "Description cannot exceed 1000 characters",
+      format: "Description must be in English"
+    },
+    price: {
+      required: "Price in Pi is required",
+      min: "Price must be greater than 0 Pi",
+      max: "Price cannot exceed 100,000 Pi",
+      format: "Invalid price format. Use numbers only"
+    },
+    category: {
+      required: "Please select a category",
+      invalid: "Selected category is not valid for Egyptian marketplace"
+    },
+    location: {
+      required: "Location in Egypt is required",
+      invalid: "Selected location must be within Egypt's boundaries",
+      outside: "Location services are only available within Egypt",
+      permission: "Location access permission is required"
+    },
+    images: {
+      required: "At least one product image is required",
+      max: "Maximum 5 images allowed",
+      size: "Each image must be under 5MB",
+      format: "Accepted formats: JPG, PNG, WEBP",
+      dimension: "Minimum image size: 600x600 pixels"
+    }
+  },
+
+  messages: {
+    success: {
+      created: "Listing successfully created",
+      updated: "Listing successfully updated",
+      deleted: "Listing successfully deleted",
+      draft_saved: "Draft saved successfully"
+    },
+    error: {
+      create: "Failed to create listing. Please try again",
+      update: "Failed to update listing. Please try again",
+      delete: "Failed to delete listing",
+      upload: "Image upload failed. Please try again",
+      location: "Location service error. Please try again",
+      network: "Network error. Please check your connection"
+    },
+    confirm: {
+      delete: "Are you sure you want to delete this listing?",
+      inactive: "Are you sure you want to mark this listing as inactive?",
+      publish: "Are you ready to publish this listing?"
+    }
+  },
+
+  filters: {
+    title: "Search Filters",
+    price_range: {
+      label: "Price Range (Pi)",
+      min: "Minimum Price",
+      max: "Maximum Price"
+    },
+    distance: {
+      label: "Distance",
+      options: {
+        "1km": "Within 1 km",
+        "5km": "Within 5 km",
+        "10km": "Within 10 km",
+        "25km": "Within 25 km",
+        "50km": "Within 50 km"
+      }
+    },
+    sort: {
+      label: "Sort By",
+      options: {
+        newest: "Newest First",
+        price_low: "Price: Low to High",
+        price_high: "Price: High to Low",
+        distance: "Nearest First",
+        popularity: "Most Popular"
+      }
+    },
+    location: {
+      label: "Location",
+      options: {
+        current: "Current Location",
+        custom: "Custom Location",
+        governorate: "Select Governorate"
+      }
+    }
+  }
+};
+
+export default listingFormConfig;
+
+/**
+ * Export individual sections for selective imports
+ */
+export const {
+  form,
+  categories,
+  statuses,
+  validation,
+  messages,
+  filters
+} = listingFormConfig;
+
+/**
+ * Export constants for use in form validation
+ */
+export const CONSTANTS = {
+  TITLE_MIN_LENGTH: 3,
+  TITLE_MAX_LENGTH: 100,
+  DESCRIPTION_MIN_LENGTH: 10,
+  DESCRIPTION_MAX_LENGTH: 1000,
+  MAX_PRICE: 100000,
+  MAX_IMAGES: 5,
+  MAX_IMAGE_SIZE: 5 * 1024 * 1024, // 5MB in bytes
+  MIN_IMAGE_DIMENSION: 600,
+  SUPPORTED_IMAGE_FORMATS: ['jpg', 'jpeg', 'png', 'webp']
+} as const;
