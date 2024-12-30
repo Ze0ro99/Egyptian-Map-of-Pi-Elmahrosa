@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: List
+items:
+# API Gateway Service
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: api-gateway
+    namespace: egyptian-map-pi
+    labels:
+      app: api-gateway
+      part-of: egyptian-map-pi
+      tier: frontend
+      environment: production
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "3000"
+  spec:
+    type: ClusterIP # Internal service type for security
+    ports:
+      - port: 80 # External port for service discovery
+        targetPort: 3000 # Application port
+        protocol: TCP
+        name: http-api
+    selector:
+      app: api-gateway
+    sessionAffinity: ClientIP # Enable session stickiness
+    sessionAffinityConfig:
+      clientIP:
+        timeoutSeconds: 10800 # 3-hour session timeout
+
+# Authentication Service
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: auth-service
+    namespace: egyptian-map-pi
+    labels:
+      app: auth-service
+      part-of: egyptian-map-pi
+      tier: backend
+      environment: production
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "3001"
+  spec:
+    type: ClusterIP # Internal-only access
+    ports:
+      - port: 3001
+        targetPort: 3001
+        protocol: TCP
+        name: http-auth
+    selector:
+      app: auth-service
+    sessionAffinity: None # Stateless service
+
+# Marketplace Service
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: marketplace-service
+    namespace: egyptian-map-pi
+    labels:
+      app: marketplace-service
+      part-of: egyptian-map-pi
+      tier: backend
+      environment: production
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "3002"
+  spec:
+    type: ClusterIP # Internal-only access
+    ports:
+      - port: 3002
+        targetPort: 3002
+        protocol: TCP
+        name: http-marketplace
+    selector:
+      app: marketplace-service
+    sessionAffinity: None # Stateless service
