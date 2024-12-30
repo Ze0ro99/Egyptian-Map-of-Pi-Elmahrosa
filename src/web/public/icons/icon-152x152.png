@@ -1,0 +1,58 @@
+Technical Specifications for Icon Creation:
+
+1. Dimensions:
+- Exact size: 152x152 pixels
+- Safe zone: 132x132 pixels (centered)
+- No scaling or padding allowed
+
+2. Format:
+- File format: PNG
+- Color space: sRGB
+- Bit depth: 32-bit (24-bit color + 8-bit alpha)
+- Compression: Optimized lossless
+- Maximum file size: 32KB
+
+3. Colors:
+- Background: #F5F5F5 (Light gray)
+- Primary theme color: #1B4D89 (Deep blue)
+- Ensure minimum contrast ratio of 4.5:1
+- Color-blind friendly palette
+
+4. Design Elements:
+- Centered Pi symbol (π)
+- Egyptian visual motifs:
+  * Simplified pyramid silhouette
+  * Traditional geometric patterns
+  * Cultural symbols integrated subtly
+- Material Design principles:
+  * Clear hierarchy
+  * Bold geometric shapes
+  * Subtle shadows (if used)
+
+5. Technical Requirements:
+- Full bleed design for iOS home screen
+- Implements maskable icon specification
+- No transparency for apple-touch-icon
+- Optimized for high-resolution displays
+- Sharp edges and clear details at 152px
+
+6. Accessibility:
+- High contrast elements
+- Distinguishable without color
+- Clear silhouette
+- Recognizable at smaller sizes
+
+7. Cultural Considerations:
+- Respectful use of Egyptian symbols
+- Appropriate cultural motifs
+- Modern interpretation of traditional elements
+- Balanced fusion of Pi Network and Egyptian identity
+
+8. Export Settings:
+- PNG format
+- sRGB color profile
+- Optimized compression
+- No metadata
+- Clean pixel grid alignment
+
+This icon should be created by a professional designer using vector graphics software and exported according to these specifications.
