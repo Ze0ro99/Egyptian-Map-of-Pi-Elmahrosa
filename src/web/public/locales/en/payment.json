@@ -1,0 +1,135 @@
+{
+  "form": {
+    "title": "Complete Purchase",
+    "amount": "Amount",
+    "amount_placeholder": "Enter amount in Pi",
+    "payment_method": "Payment Method",
+    "pi_wallet": "Pi Wallet",
+    "escrow_service": "Escrow Service",
+    "escrow_checkbox": "I agree to use Pi Network Escrow Service",
+    "escrow_info": "Escrow service protects both buyer and seller during the transaction",
+    "delivery_method": "Delivery Method",
+    "delivery_placeholder": "Select delivery method",
+    "location": "Your Location",
+    "current_location": "Use Current Location", 
+    "select_on_map": "Select on Map",
+    "egyptian_market": "Egyptian Marketplace Transaction",
+    "buttons": {
+      "cancel": "Cancel",
+      "pay_now": "Pay Now",
+      "processing": "Processing...",
+      "verify": "Verify Details"
+    },
+    "errors": {
+      "minimum_amount": "Minimum amount is 0.1 Pi",
+      "maximum_amount": "Maximum amount is 10,000 Pi",
+      "invalid_amount": "Please enter a valid amount",
+      "required_field": "This field is required",
+      "invalid_location": "Location must be within Egypt",
+      "escrow_required": "Escrow service is required for this transaction"
+    }
+  },
+  "confirmation": {
+    "title": "Payment Confirmation",
+    "summary": "Transaction Summary",
+    "seller": "Seller",
+    "buyer": "Buyer",
+    "amount": "Amount",
+    "fees": "Transaction Fees",
+    "total": "Total Amount",
+    "escrow_status": "Escrow Status",
+    "delivery_details": "Delivery Details",
+    "estimated_delivery": "Estimated Delivery Time",
+    "buttons": {
+      "confirm": "Confirm Payment",
+      "back": "Back to Details",
+      "view_receipt": "View Receipt"
+    },
+    "messages": {
+      "success": "Payment successful",
+      "pending": "Payment processing",
+      "failed": "Payment failed"
+    }
+  },
+  "history": {
+    "title": "Transaction History",
+    "filters": {
+      "all": "All Transactions",
+      "sent": "Sent",
+      "received": "Received",
+      "pending": "Pending",
+      "completed": "Completed",
+      "disputed": "Disputed"
+    },
+    "table": {
+      "date": "Date",
+      "type": "Type",
+      "amount": "Amount",
+      "status": "Status",
+      "counterparty": "Counterparty",
+      "details": "Details"
+    },
+    "empty_state": "No transactions found",
+    "load_more": "Load More"
+  },
+  "status": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "completed": "Completed",
+    "failed": "Failed",
+    "disputed": "Disputed",
+    "resolved": "Resolved",
+    "cancelled": "Cancelled",
+    "refunded": "Refunded"
+  },
+  "escrow": {
+    "title": "Escrow Service",
+    "description": "Secure transactions with Pi Network Escrow",
+    "how_it_works": "How Escrow Works",
+    "steps": {
+      "1": "Buyer sends payment to escrow",
+      "2": "Seller ships the item",
+      "3": "Buyer confirms receipt",
+      "4": "Payment released to seller"
+    },
+    "status": {
+      "awaiting_payment": "Awaiting Payment",
+      "payment_secured": "Payment Secured",
+      "awaiting_shipment": "Awaiting Shipment",
+      "in_transit": "In Transit",
+      "awaiting_confirmation": "Awaiting Confirmation",
+      "completed": "Completed"
+    },
+    "dispute": {
+      "title": "Dispute Resolution",
+      "file_dispute": "File a Dispute",
+      "reason": "Reason for Dispute",
+      "description": "Dispute Description",
+      "submit": "Submit Dispute"
+    }
+  },
+  "delivery": {
+    "methods": {
+      "in_person": "In-Person Pickup",
+      "local_delivery": "Local Delivery",
+      "shipping": "Shipping"
+    },
+    "status": {
+      "pending": "Pending Pickup/Delivery",
+      "in_transit": "In Transit",
+      "delivered": "Delivered",
+      "failed": "Delivery Failed"
+    },
+    "locations": {
+      "cairo": "Cairo",
+      "alexandria": "Alexandria",
+      "giza": "Giza",
+      "other": "Other Governorates"
+    },
+    "instructions": {
+      "pickup": "Pickup Instructions",
+      "delivery": "Delivery Instructions",
+      "contact": "Contact Information"
+    }
+  }
+}
