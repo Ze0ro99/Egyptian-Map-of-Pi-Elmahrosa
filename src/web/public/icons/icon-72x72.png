@@ -1,0 +1,49 @@
+Image Specifications:
+- Dimensions: 72x72 pixels
+- Format: PNG with transparency
+- Color Depth: 32-bit
+- Max File Size: 5KB
+- Purpose: any maskable
+
+Design Elements:
+1. Base Shape:
+- Material Design square with 12px rounded corners
+- Primary color: #1B4D89 (Egyptian Map of Pi brand blue)
+- Background: #F5F5F5 with transparency support
+
+2. Icon Design:
+- Centered "π" symbol in modern geometric style
+- Egyptian cultural elements:
+  - Subtle pyramid silhouette overlay
+  - Hieroglyphic-inspired decorative border
+- 8px minimum padding from edges
+- High contrast for visibility
+- Optimized for small size display
+
+3. Technical Optimizations:
+- Lossless PNG compression
+- Web-safe color palette
+- Essential PWA metadata preserved
+- Maskable icon support
+- Dark mode compatible
+
+4. Accessibility Features:
+- High contrast ratio > 4.5:1
+- Color-blind friendly design
+- Recognizable at 72px size
+- Clear silhouette for adaptive icons
+
+Browser Support:
+- Pi Browser (latest): Maskable support
+- Chrome Mobile 80+: Adaptive icon
+- Safari iOS 12+: Retina optimized
+- Firefox Mobile 95+: Standard support
+- Opera Mobile 60+: Standard support
+
+Performance:
+- Load time < 100ms
+- Cache-first strategy
+- 30-day cache duration
+- Compressed size < 5KB
+
+[Note: The actual binary image file would be created according to these specifications using appropriate image creation tools]
