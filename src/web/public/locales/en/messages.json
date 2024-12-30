@@ -1,0 +1,64 @@
+{
+  "chat": {
+    "title": "Messages",
+    "newMessage": "New Message",
+    "noMessages": "No messages",
+    "loadMore": "Load More",
+    "typeMessage": "Type your message...",
+    "send": "Send",
+    "attachImage": "Attach Image",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "online": "Online",
+    "offline": "Offline",
+    "lastSeen": "Last seen {{time}}",
+    "typing": "{{user}} is typing...",
+    "imagePreview": "Image Preview",
+    "voiceMessage": "Voice Message",
+    "location": "Location"
+  },
+  "status": {
+    "sent": "Sent",
+    "delivered": "Delivered", 
+    "read": "Read",
+    "failed": "Failed",
+    "pending": "Pending",
+    "uploading": "Uploading...",
+    "downloading": "Downloading..."
+  },
+  "errors": {
+    "sendFailed": "Failed to send message. Please try again",
+    "loadFailed": "Failed to load messages",
+    "networkError": "Network error",
+    "invalidMessage": "Invalid message",
+    "unauthorized": "Please login to chat",
+    "attachmentFailed": "Failed to attach file",
+    "fileTooLarge": "File size exceeds limit",
+    "invalidFileType": "Unsupported file type"
+  },
+  "conversation": {
+    "with": "Chat with {{name}}",
+    "about": "About {{item}}",
+    "price": "Price: {{amount}} Pi",
+    "startChat": "Start Chat",
+    "block": "Block User",
+    "report": "Report Content",
+    "delete": "Delete Conversation",
+    "confirmDelete": "Are you sure you want to delete this conversation?",
+    "blocked": "You have blocked this user",
+    "unblock": "Unblock User",
+    "reported": "Content reported",
+    "archive": "Archive Conversation",
+    "unarchive": "Unarchive Conversation"
+  },
+  "notifications": {
+    "newMessage": "New message from {{sender}}",
+    "messageRequest": "New chat request",
+    "accepted": "Chat request accepted",
+    "declined": "Chat request declined",
+    "blocked": "You have been blocked by {{user}}",
+    "unblocked": "You have been unblocked by {{user}}",
+    "mentioned": "{{user}} mentioned you",
+    "reacted": "{{user}} reacted to your message"
+  }
+}
