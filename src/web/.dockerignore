@@ -1,0 +1,86 @@
+.git
+.gitignore
+
+# Dependencies
+node_modules
+
+# Build Outputs
+.next
+out
+coverage
+
+# Environment & Configuration
+.env*.local
+pi-network*.json
+
+# Test Files
+tests
+cypress
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Documentation
+README*.md
+
+# Development Configurations
+.eslintrc*
+.prettierrc*
+tsconfig*.json
+
+# Logs
+*.log
+
+# IDE and Editor Files
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+
+# Cache Directories
+.cache
+.npm
+.yarn
+
+# Temporary Files
+tmp
+temp
+*.tmp
+
+# Development Assets
+__mocks__
+__tests__
+.storybook
+storybook-static
+
+# Build Analysis
+bundle-analysis
+stats.json
+
+# Development Scripts
+scripts
+dev-tools
+
+# Backup Files
+*.bak
+*.backup
+
+# Local Development Certificates
+*.pem
+*.crt
+*.key
+
+# Dependency Lock Files (will be regenerated)
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+# Miscellaneous
+.dockerignore
+Dockerfile*
+docker-compose*
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
