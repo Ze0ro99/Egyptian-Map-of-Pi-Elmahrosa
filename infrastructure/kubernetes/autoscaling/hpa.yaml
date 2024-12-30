@@ -1,0 +1,92 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-gateway-hpa
+  namespace: app
+  labels:
+    app: egyptian-map-pi
+    component: api-gateway
+    region: me-south-1
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-gateway
+  minReplicas: 2  # Minimum HA requirement
+  maxReplicas: 10 # Maximum scaling for traffic spikes
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70  # Scale at 70% CPU utilization
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60  # 1-minute stabilization window
+      policies:
+        - type: Pods
+          value: 2  # Add up to 2 pods at a time
+          periodSeconds: 30
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: marketplace-service-hpa
+  namespace: app
+  labels:
+    app: egyptian-map-pi
+    component: marketplace
+    region: me-south-1
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: marketplace-service
+  minReplicas: 2  # Minimum HA requirement
+  maxReplicas: 10 # Maximum scaling for search operations
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70  # Scale at 70% CPU utilization
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 90  # 1.5-minute stabilization window
+      policies:
+        - type: Pods
+          value: 2  # Add up to 2 pods at a time
+          periodSeconds: 45
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: messaging-service-hpa
+  namespace: app
+  labels:
+    app: egyptian-map-pi
+    component: messaging
+    region: me-south-1
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: messaging-service
+  minReplicas: 2  # Minimum HA requirement
+  maxReplicas: 8  # Maximum scaling for WebSocket connections
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70  # Scale at 70% CPU utilization
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 120  # 2-minute stabilization window
+      policies:
+        - type: Pods
+          value: 1  # Add 1 pod at a time for more controlled scaling
+          periodSeconds: 60
