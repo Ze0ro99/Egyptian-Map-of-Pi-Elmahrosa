@@ -1,0 +1,184 @@
+/* Egyptian Map of Pi Theme
+ * Version: 1.0.0
+ * Description: Core theme implementing Material Design with Egyptian cultural adaptations
+ * Supporting: Light/Dark modes, RTL layouts, WCAG 2.1 Level AA compliance
+ */
+
+/* Root Theme Variables */
+:root {
+  /* Primary Colors - Royal Blue representing the Nile */
+  --primary-main: #1B4D89;
+  --primary-light: #4B7BBA;
+  --primary-dark: #0D2645;
+  --primary-contrast: #FFFFFF;
+
+  /* Secondary Colors - Egyptian Gold */
+  --secondary-main: #D4AF37;
+  --secondary-light: #E4C96A;
+  --secondary-dark: #9E8329;
+  --secondary-contrast: #000000;
+
+  /* Background Colors */
+  --background-default: #F5F5F5;
+  --background-paper: #FFFFFF;
+
+  /* Text Colors */
+  --text-primary: #1A1A1A;
+  --text-secondary: #757575;
+
+  /* Status Colors */
+  --error-main: #D32F2F;
+  --success-main: #2E7D32;
+  --warning-main: #ED6C02;
+  --info-main: #0288D1;
+
+  /* Typography */
+  --font-family-arabic: 'Cairo', sans-serif;
+  --font-family-english: 'Roboto', Arial, sans-serif;
+
+  /* Spacing and Layout */
+  --spacing-unit: 8px;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --transition-duration: 0.2s;
+
+  /* Elevation */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.1);
+
+  /* Accessibility */
+  --focus-ring-color: #1B4D89;
+  --focus-ring-width: 2px;
+  --high-contrast-ratio: 7:1;
+}
+
+/* Dark Theme */
+[data-theme='dark'] {
+  --background-default: #121212;
+  --background-paper: #1E1E1E;
+  --text-primary: #FFFFFF;
+  --text-secondary: #B0B0B0;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.2);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
+  --high-contrast-background: #000000;
+  --high-contrast-text: #FFFFFF;
+}
+
+/* RTL Support */
+[dir='rtl'] {
+  --text-align: right;
+  --start-direction: right;
+  --end-direction: left;
+  --margin-start: margin-right;
+  --margin-end: margin-left;
+  --padding-start: padding-right;
+  --padding-end: padding-left;
+}
+
+/* Typography Scale */
+.typography {
+  /* Headings */
+  & h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: calc(var(--spacing-unit) * 3);
+    font-family: var(--font-family-arabic);
+  }
+
+  & h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: calc(var(--spacing-unit) * 2.5);
+    font-family: var(--font-family-arabic);
+  }
+
+  & body1 {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: var(--spacing-unit);
+    font-family: var(--font-family-arabic);
+  }
+}
+
+/* Component Styles */
+.components {
+  /* Button Component */
+  & .button {
+    border-radius: var(--border-radius-md);
+    padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2);
+    font-weight: 500;
+    transition: all var(--transition-duration);
+    text-transform: none;
+    min-height: 44px;
+    min-width: 44px;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) solid var(--focus-ring-color);
+      outline-offset: 2px;
+    }
+  }
+
+  /* Input Component */
+  & .input {
+    border-radius: var(--border-radius-sm);
+    padding: calc(var(--spacing-unit) * 1.5);
+    border: 1px solid var(--text-secondary);
+    background-color: var(--background-paper);
+    min-height: 44px;
+    text-align: var(--text-align);
+    direction: inherit;
+  }
+}
+
+/* System Dark Mode Preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --background-default: #121212;
+    --background-paper: #1E1E1E;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B0B0B0;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    --background-default: var(--high-contrast-background);
+    --text-primary: var(--high-contrast-text);
+    --focus-ring-width: 3px;
+  }
+}
+
+/* Utility Classes for RTL Support */
+[dir='rtl'] {
+  .typography {
+    text-align: right;
+  }
+
+  .components {
+    & .input {
+      text-align: right;
+    }
+  }
+}
+
+/* Print Styles */
+@media print {
+  :root {
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+  }
+
+  .components {
+    & .button {
+      border: 1px solid var(--text-primary);
+    }
+  }
+}
