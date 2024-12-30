@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <!-- Character encoding and viewport settings -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <!-- Primary meta tags -->
+    <title>سوق خريطة باي المصري | Egyptian Map of Pi</title>
+    <meta name="description" content="سوق خريطة باي المصري - المنصة المحلية لمعاملات شبكة باي في مصر">
+    <meta name="description" content="Egyptian Map of Pi - Local marketplace for Pi Network transactions in Egypt" lang="en">
+
+    <!-- Theme and color scheme -->
+    <meta name="theme-color" content="#1B4D89">
+    <meta name="color-scheme" content="light dark">
+
+    <!-- iOS specific meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- PWA support -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Favicon and icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+    
+    <!-- PWA icons for different sizes -->
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="144x144" href="/icons/icon-144x144.png">
+    <link rel="icon" type="image/png" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="icon" type="image/png" sizes="128x128" href="/icons/icon-128x128.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/icons/icon-96x96.png">
+    <link rel="icon" type="image/png" sizes="72x72" href="/icons/icon-72x72.png">
+
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/fonts/cairo-arabic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="preload" href="/styles/globals.css" as="style">
+    <link rel="preload" href="/_next/static/chunks/main.js" as="script">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/styles/globals.css">
+
+    <!-- Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" media="print" onload="this.media='all'">
+
+    <!-- Next.js optimization -->
+    <script src="/_next/static/chunks/main.js" defer></script>
+    
+    <!-- Preconnect to critical domains -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="سوق خريطة باي المصري | Egyptian Map of Pi">
+    <meta property="og:description" content="المنصة المحلية لمعاملات شبكة باي في مصر">
+    <meta property="og:image" content="/icons/icon-512x512.png">
+
+    <!-- Security headers -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.egyptianmapofpi.com;">
+</head>
+<body>
+    <!-- Application root -->
+    <div id="root" dir="rtl" lang="ar"></div>
+
+    <!-- Noscript fallback -->
+    <noscript>
+        <div style="text-align: center; padding: 20px; direction: rtl;">
+            <p style="font-family: 'Cairo', sans-serif;">يتطلب تشغيل جافا سكريبت لتشغيل هذا التطبيق</p>
+            <p style="font-family: 'Roboto', sans-serif;">JavaScript is required to run this application</p>
+        </div>
+    </noscript>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
