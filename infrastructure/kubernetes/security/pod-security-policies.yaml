@@ -1,0 +1,143 @@
+apiVersion: policy/v1beta1
+kind: List
+items:
+# Restricted Pod Security Policy - Default policy for application workloads
+- apiVersion: policy/v1beta1
+  kind: PodSecurityPolicy
+  metadata:
+    name: restricted-pods
+    labels:
+      app: egyptian-map-pi
+      tier: security
+      compliance: standard
+    annotations:
+      # Enforce default runtime security profiles
+      seccomp.security.alpha.kubernetes.io/defaultProfileName: 'runtime/default'
+      apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
+      # Enable audit logging for security events
+      audit.kubernetes.io/mode: 'enabled'
+  spec:
+    # Prevent privileged container execution
+    privileged: false
+    allowPrivilegeEscalation: false
+    
+    # Drop all capabilities by default
+    requiredDropCapabilities: ['ALL']
+    defaultAddCapabilities: []
+    allowedCapabilities: []
+    
+    # Restrict volume types to minimum required
+    volumes:
+    - configMap
+    - emptyDir
+    - projected
+    - secret
+    - downwardAPI
+    - persistentVolumeClaim
+    
+    # Disable host namespace sharing
+    hostNetwork: false
+    hostIPC: false
+    hostPID: false
+    
+    # Enforce non-root user execution
+    runAsUser:
+      rule: MustRunAsNonRoot
+      ranges:
+      - min: 1000
+        max: 65535
+        
+    # SELinux context restrictions
+    seLinux:
+      rule: MustRunAs
+      seLinuxOptions:
+        level: 's0:c123,c456'
+        
+    # Group ID restrictions
+    supplementalGroups:
+      rule: MustRunAs
+      ranges:
+      - min: 1000
+        max: 65535
+        
+    # Filesystem group restrictions  
+    fsGroup:
+      rule: MustRunAs
+      ranges:
+      - min: 1000
+        max: 65535
+        
+    # Enforce read-only root filesystem
+    readOnlyRootFilesystem: true
+    
+    # Block all sysctls by default
+    forbiddenSysctls: ['*']
+    
+    # Runtime class restrictions
+    runtimeClass:
+      defaultRuntimeClassName: 'runc'
+      allowedRuntimeClassNames: ['runc']
+
+# Privileged Pod Security Policy - For system components requiring elevated access
+- apiVersion: policy/v1beta1
+  kind: PodSecurityPolicy
+  metadata:
+    name: privileged-pods
+    labels:
+      app: egyptian-map-pi
+      tier: security
+      compliance: elevated
+    annotations:
+      # Allow custom seccomp profiles
+      seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+      # Enable extended audit logging
+      audit.kubernetes.io/mode: 'enabled'
+      audit.kubernetes.io/maxAge: '30'
+  spec:
+    # Allow privileged execution for system pods
+    privileged: true
+    allowPrivilegeEscalation: true
+    
+    # Allow specific elevated capabilities
+    allowedCapabilities:
+    - NET_ADMIN  # For network management
+    - SYS_ADMIN  # For system administration
+    - SYS_PTRACE # For debugging
+    
+    # Allow all volume types
+    volumes: ['*']
+    
+    # Allow host namespace access
+    hostNetwork: true
+    hostIPC: true
+    hostPID: true
+    
+    # Flexible user execution
+    runAsUser:
+      rule: RunAsAny
+      
+    # Flexible SELinux contexts
+    seLinux:
+      rule: RunAsAny
+      
+    # Flexible group execution
+    supplementalGroups:
+      rule: RunAsAny
+      
+    # Flexible filesystem groups
+    fsGroup:
+      rule: RunAsAny
+      
+    # Optional read-only root filesystem
+    readOnlyRootFilesystem: false
+    
+    # Allow specific host paths
+    allowedHostPaths:
+    - pathPrefix: "/var/log"
+      readOnly: true
+    - pathPrefix: "/etc/kubernetes"
+      readOnly: true
+      
+    # Allow network sysctls but forbid kernel modifications
+    allowedUnsafeSysctls: ['net.*']
+    forbiddenSysctls: ['kernel.*']
