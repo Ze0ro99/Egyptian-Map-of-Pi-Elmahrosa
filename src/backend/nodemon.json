@@ -1,0 +1,35 @@
+{
+  "watch": [
+    "src/**/*.ts",
+    "src/**/*.json",
+    "shared/**/*.ts",
+    "shared/**/*.json",
+    "config/**/*.ts",
+    "config/**/*.json"
+  ],
+  "ignore": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**",
+    "**/__mocks__/**",
+    "node_modules",
+    "dist",
+    "coverage",
+    ".git",
+    "logs"
+  ],
+  "exec": "ts-node --project tsconfig.json",
+  "ext": ".ts,.js,.json,.mjs",
+  "delay": 2000,
+  "verbose": true,
+  "legacyWatch": false,
+  "polling": false,
+  "restartable": "rs",
+  "colours": true,
+  "env": {
+    "NODE_ENV": "development",
+    "TS_NODE_PROJECT": "tsconfig.json",
+    "TS_NODE_TRANSPILE_ONLY": "false",
+    "DEBUG": "egyptian-map-pi:*"
+  }
+}
