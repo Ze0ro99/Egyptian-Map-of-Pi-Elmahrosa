@@ -1,0 +1,197 @@
+# Egyptian Map of Pi - Continuous Deployment Workflow
+# Version: 1.0.0
+name: Continuous Deployment
+
+# Trigger on CI/Security workflow completion or manual dispatch
+on:
+  workflow_run:
+    workflows: ['CI', 'Security Scan']
+    types: [completed]
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      region:
+        description: 'AWS region for deployment'
+        required: true
+        default: 'me-south-1'
+        type: choice
+        options:
+          - me-south-1
+          - eu-south-1
+
+# Prevent concurrent deployments to same environment/region
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.aws-region }}
+  cancel-in-progress: false
+
+env:
+  NODE_ENV: ${{ matrix.environment }}
+  AWS_REGION: ${{ matrix.aws-region }}
+  DOCKER_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}
+  DEPLOYMENT_TIMEZONE: 'Africa/Cairo'
+  LANGUAGE_SETTINGS: 'ar-EG,en-US'
+
+jobs:
+  prepare-deployment:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - id: version
+        run: |
+          VERSION=$(date '+%Y%m%d')-$(git rev-parse --short HEAD)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+  deploy-service:
+    needs: prepare-deployment
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api-gateway, auth-service, location-service, marketplace-service, messaging-service, payment-service, web]
+        environment: [staging, production]
+        aws-region: [me-south-1, eu-south-1]
+        include:
+          - environment: staging
+            deployment_strategy: blue-green
+          - environment: production
+            deployment_strategy: rolling-update
+    
+    environment:
+      name: ${{ matrix.environment }}
+      url: https://${{ matrix.environment }}.egyptian-map-pi.pi.network
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          lfs: true
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ matrix.aws-region }}
+          mask-aws-account-id: true
+      
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: ${{ secrets.AWS_ECR_REGISTRY }}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker/${{ matrix.service }}/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKER_REGISTRY }}/${{ matrix.service }}:${{ needs.prepare-deployment.outputs.version }}
+            ${{ env.DOCKER_REGISTRY }}/${{ matrix.service }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=${{ matrix.environment }}
+            VERSION=${{ needs.prepare-deployment.outputs.version }}
+      
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v2
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+          context: egyptian-map-pi-${{ matrix.environment }}
+      
+      - name: Deploy service
+        env:
+          VERSION: ${{ needs.prepare-deployment.outputs.version }}
+          SERVICE: ${{ matrix.service }}
+          STRATEGY: ${{ matrix.deployment_strategy }}
+        run: |
+          chmod +x ./infrastructure/scripts/deploy.sh
+          ./infrastructure/scripts/deploy.sh \
+            --environment ${{ matrix.environment }} \
+            --service ${{ matrix.service }} \
+            --version ${{ needs.prepare-deployment.outputs.version }} \
+            --strategy ${{ matrix.deployment_strategy }} \
+            --region ${{ matrix.aws-region }}
+      
+      - name: Validate deployment
+        run: |
+          ./infrastructure/scripts/deploy.sh validate \
+            --environment ${{ matrix.environment }} \
+            --service ${{ matrix.service }}
+      
+      - name: Run health checks
+        run: |
+          ./infrastructure/scripts/deploy.sh health-check \
+            --environment ${{ matrix.environment }} \
+            --service ${{ matrix.service }}
+      
+      - name: Backup before production deployment
+        if: matrix.environment == 'production'
+        run: |
+          ./infrastructure/scripts/deploy.sh backup \
+            --service ${{ matrix.service }} \
+            --region ${{ matrix.aws-region }}
+      
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          ./infrastructure/scripts/deploy.sh rollback \
+            --environment ${{ matrix.environment }} \
+            --service ${{ matrix.service }} \
+            --version ${{ needs.prepare-deployment.outputs.version }}
+
+  post-deployment:
+    needs: [prepare-deployment, deploy-service]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify deployment status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const message = `Deployment completed successfully
+              Version: ${process.env.VERSION}
+              Environment: ${process.env.ENVIRONMENT}
+              Region: ${process.env.AWS_REGION}
+              Services: All services deployed and validated`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
+        env:
+          VERSION: ${{ needs.prepare-deployment.outputs.version }}
+          ENVIRONMENT: ${{ matrix.environment }}
+          AWS_REGION: ${{ matrix.aws-region }}
+
+      - name: Update deployment status
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const status = ${{ job.status == 'success' }} ? 'success' : 'failure';
+            github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment.id,
+              state: status,
+              environment_url: `https://${process.env.ENVIRONMENT}.egyptian-map-pi.pi.network`,
+              description: `Deployment ${status} for version ${process.env.VERSION}`
+            });
