@@ -1,5 +1,4 @@
-git gc --prune=now
-git fsck --full
+
 # Egyptian Map of Pi
 
 [![Build Status](https://github.com/owner/repo/actions/workflows/main.yml/badge.svg)](https://github.com/owner/repo/actions/workflows/main.yml)
