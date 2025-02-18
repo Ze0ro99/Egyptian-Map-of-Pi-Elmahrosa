@@ -7,7 +7,14 @@
 [![Version](https://img.shields.io/badge/Version-1.0.0-green.svg)](CHANGELOG.md)
 
 ---
-
+https://minepi.com/
+https://www.raspberrypi.com/
+https://www.worldbank.org/
+https://www.worldbank.org/
+https://www.centralbank.ae/
+https://www.iso.org/iso-27001-information-security.html
+https://www.iso.org/iso-20000-it-service-management.html
+https://dl.circleci.com/status-badge/redirect/gh/https://github.com/Aymanseif/Egyptian-Map-of-Pi-Elmahrosa
 Peta Mesir Pi
 
 
