@@ -1,0 +1,15 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run: echo "Build berhasil!"
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
