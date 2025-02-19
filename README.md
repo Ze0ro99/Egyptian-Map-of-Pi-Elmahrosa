@@ -1,7 +1,6 @@
 
 # Egyptian Map of Pi
-
-[![Build Status](https://dl.circleci.com/status-badge/redirect/gh/https://github.com/Aymanseif/Egyptian-Map-of-Pi-Elmahrosa)
+[![Build Status](https://circleci.com/gh/user/repo.svg?style=shield)](https://circleci.com/gh/user/repo)
 [![Test Coverage](https://codecov.io/gh/owner/repo/branch/main/graph/badge.svg)](https://codecov.io/gh/owner/repo)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.0.0-green.svg)](CHANGELOG.md)
