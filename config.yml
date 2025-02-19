@@ -1,0 +1,59 @@
+version: 2.1
+
+executors:
+  python_executor:
+    docker:
+      - image: circleci/python:3.9  # Ganti dengan versi Python yang sesuai
+
+jobs:
+  install_dependencies:
+    executor: python_executor
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            python -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+      - persist_to_workspace:
+          root: .
+          paths:
+            - venv
+
+  lint_code:
+    executor: python_executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Run Linter (Flake8)
+          command: |
+            source venv/bin/activate
+            pip install flake8
+            flake8 --max-line-length=120
+
+  test_application:
+    executor: python_executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Run Tests
+          command: |
+            source venv/bin/activate
+            pytest
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - install_dependencies
+      - lint_code:
+          requires:
+            - install_dependencies
+      - test_application:
+          requires:
+            - install_dependencies
